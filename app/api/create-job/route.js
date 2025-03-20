@@ -1,6 +1,7 @@
 // pages/api/create-job.js
 import { connectMongoDB } from '@/lib/mongodb';
 import JobPosting from '@/models/JobPosting';
+import { is } from 'date-fns/locale';
 import { NextResponse } from 'next/server';
 
 export async function POST(req) {
@@ -29,6 +30,7 @@ export async function POST(req) {
       about,
       responsibilities,
       niceToHaves,
+      isActive: true,
     });
 
     return NextResponse.json(
@@ -52,13 +54,15 @@ export async function GET(req) {
     const id = searchParams.get("id");
 
     if (id) {
-      const jobPosting = await JobPosting.findById(id);
+      const jobPosting = await JobPosting.findOne({ _id: id, isActive: true });
       if (!jobPosting) {
         return NextResponse.json({ message: "Job posting not found" }, { status: 404 });
       }
       return NextResponse.json(jobPosting, { status: 200 });
     } else {
-      const jobPostings = await JobPosting.find({});
+      const jobPostings = await JobPosting.find({
+        isActive: true,
+      });
       return NextResponse.json(jobPostings, { status: 200 });
     }
   } catch (error) {
