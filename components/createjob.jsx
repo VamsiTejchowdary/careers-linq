@@ -99,7 +99,6 @@ export default function CreateJobForm() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Header */}
       <header className="w-full px-6 py-4 flex items-center bg-indigo-600 text-white shadow-md">
         <Link href="/">
           <div className="flex items-center">

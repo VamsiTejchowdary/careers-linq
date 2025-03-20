@@ -299,7 +299,6 @@ export default function JobDetailPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Job Details Column */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
               <div className="mb-8">
@@ -428,7 +427,6 @@ export default function JobDetailPage() {
                 <p className="text-gray-700">{job.reportsTo}</p>
               </div>
 
-              {/* Why Join Linq Section */}
               <div className="p-6 bg-indigo-50 rounded-lg border border-indigo-100">
                 <h2 className="text-xl font-semibold text-indigo-800 mb-4 flex items-center">
                   <svg
@@ -569,8 +567,6 @@ export default function JobDetailPage() {
               </div>
             </div>
           </div>
-
-          {/* Application Form Column */}
           <div className="lg:col-span-1">
             <div
               id="apply-now"

@@ -14,7 +14,7 @@ export default function CareersPage() {
 
   const ctaSliderRef = useRef(null);
 
-  // CTA content
+
   const ctaContent = [
     {
       title: "Join Our Team",
@@ -39,7 +39,6 @@ export default function CareersPage() {
     },
   ];
 
-  // Define all possible departments
   const allDepartments = [
     "Engineering",
     "Sales",
@@ -51,7 +50,7 @@ export default function CareersPage() {
     "Design",
   ];
 
-  // Auto-slide CTAs
+
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveCTA((prev) => (prev + 1) % ctaContent.length);
@@ -59,7 +58,7 @@ export default function CareersPage() {
     return () => clearInterval(interval);
   }, [ctaContent.length]);
 
-  // Parallax effect for hero section
+
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
@@ -75,7 +74,7 @@ export default function CareersPage() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Fetch job postings from the API
+
   useEffect(() => {
     const fetchPositions = async () => {
       try {
@@ -102,7 +101,7 @@ export default function CareersPage() {
     fetchPositions();
   }, []);
 
-  // Animation for elements on scroll
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -145,7 +144,7 @@ export default function CareersPage() {
         />
       </Head>
 
-      {/* Navigation */}
+
       <nav className="fixed top-0 left-0 w-full bg-white/90 backdrop-blur-sm z-50 shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
@@ -208,19 +207,16 @@ export default function CareersPage() {
         {/* Mobile menu */}
         <div className={`${isNavOpen ? 'block' : 'hidden'} md:hidden`}>
           <div className="pt-2 pb-3 space-y-1">
-            <Link href="/" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800">
+            <Link href="https://linqapp.com/" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800">
               Home
             </Link>
-            <Link href="/products" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800">
-              Products
-            </Link>
-            <Link href="/about" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800">
-              About
+            <Link href="https://linqapp.com/linq-one" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800">
+              Linq One
             </Link>
             <Link href="/careers" className="block pl-3 pr-4 py-2 border-l-4 border-indigo-500 text-base font-medium text-indigo-700 bg-indigo-50">
               Careers
             </Link>
-            <Link href="/contact" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800">
+            <Link href="https://linqapp.com/support" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800">
               Contact
             </Link>
           </div>
@@ -234,30 +230,30 @@ export default function CareersPage() {
         </div>
       </nav>
 
-      {/* Hero Section */}
+
       <div className="relative h-[90vh] w-full overflow-hidden pt-16">
         <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 opacity-90"></div>
         {/* <div className="absolute inset-0 bg-[url('/images/team-bg.jpg')] bg-cover bg-center mix-blend-overlay"></div> */}
         
-        {/* Floating elements */}
+    
         <div className="absolute inset-0">
           <div className="absolute top-1/4 left-1/4 w-4 h-4 bg-white rounded-full animate-ping opacity-75 parallax-element" data-speed="0.5" style={{ animationDuration: "3s" }}></div>
           <div className="absolute top-3/4 left-1/3 w-3 h-3 bg-white rounded-full animate-ping opacity-75 parallax-element" data-speed="0.3" style={{ animationDuration: "2.5s", animationDelay: "0.5s" }}></div>
           <div className="absolute top-1/3 left-2/3 w-5 h-5 bg-white rounded-full animate-ping opacity-75 parallax-element" data-speed="0.2" style={{ animationDuration: "2.8s", animationDelay: "0.3s" }}></div>
           <div className="absolute top-2/3 left-3/4 w-4 h-4 bg-white rounded-full animate-ping opacity-75 parallax-element" data-speed="0.4" style={{ animationDuration: "3.2s", animationDelay: "0.7s" }}></div>
           
-          {/* Additional floating elements */}
+        
           <div className="absolute top-1/2 left-1/5 w-6 h-6 bg-white/30 rounded-full animate-pulse opacity-50 parallax-element" data-speed="0.15"></div>
           <div className="absolute top-1/6 left-1/2 w-8 h-8 bg-white/20 rounded-full animate-pulse opacity-40 parallax-element" data-speed="0.25"></div>
           <div className="absolute top-3/4 left-1/6 w-12 h-12 bg-white/10 rounded-full animate-pulse opacity-30 parallax-element" data-speed="0.35"></div>
         </div>
         
-        {/* Abstract shapes */}
+
         <div className="absolute w-64 h-64 bg-white/5 rounded-full -top-20 -left-20 animate-pulse parallax-element" data-speed="0.1"></div>
         <div className="absolute w-96 h-96 bg-white/5 rounded-full -bottom-32 -right-32 animate-pulse parallax-element" data-speed="0.15" style={{ animationDelay: "1s" }}></div>
         <div className="absolute w-40 h-40 bg-white/5 rounded-full top-1/4 right-1/4 animate-pulse parallax-element" data-speed="0.2" style={{ animationDelay: "0.5s" }}></div>
         
-        {/* Hero content */}
+
         <div className="relative flex h-full items-center justify-center px-8">
           <div className="text-center max-w-4xl transform transition-all duration-700 animate-fadeIn">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fadeInUp">
@@ -275,7 +271,7 @@ export default function CareersPage() {
           </div>
         </div>
         
-        {/* Wave separator */}
+
         <div className="absolute bottom-0 left-0 right-0">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className="w-full">
             <path fill="#fff" fillOpacity="1" d="M0,160L48,170.7C96,181,192,203,288,197.3C384,192,480,160,576,154.7C672,149,768,171,864,181.3C960,192,1056,192,1152,176C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
@@ -283,7 +279,7 @@ export default function CareersPage() {
         </div>
       </div>
 
-      {/* Auto-sliding CTAs */}
+
       <section className="py-12 px-4 md:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="relative overflow-hidden rounded-3xl shadow-2xl">
@@ -314,7 +310,6 @@ export default function CareersPage() {
         </div>
       </section>
 
-      {/* Vision Section */}
       <section className="py-16 md:py-24 px-4 md:px-8 max-w-7xl mx-auto">
         <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
           <div className="animate-on-scroll">
@@ -363,7 +358,7 @@ export default function CareersPage() {
         </div>
       </section>
 
-      {/* Key Values Section */}
+
       <section className="py-16 px-4 md:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12 animate-on-scroll">
@@ -420,7 +415,7 @@ export default function CareersPage() {
           </div>
         </div>
       </section>
-      {/* Open Positions Section */}
+
       <section id="openings" className="py-16 md:py-24 px-4 md:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12 animate-on-scroll">
@@ -438,7 +433,7 @@ export default function CareersPage() {
             <div className="text-center text-red-600">Error: {error}</div>
           ) : (
             <>
-              {/* Department Tabs */}
+  
               <div className="flex flex-wrap justify-center gap-3 md:gap-4 mb-12 md:mb-16 animate-on-scroll">
                 <button
                   onClick={() => setActiveTab("all")}
@@ -465,7 +460,7 @@ export default function CareersPage() {
                 ))}
               </div>
 
-              {/* Job Listings */}
+
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {filteredPositions.length > 0 ? (
                   filteredPositions.map((position) => (
@@ -556,7 +551,7 @@ export default function CareersPage() {
         </div>
       </section>
 
-      {/* Life at Linq Section */}
+
       <section id="culture" className="py-16 md:py-24 px-4 md:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12 animate-on-scroll">
@@ -568,7 +563,7 @@ export default function CareersPage() {
             </p>
           </div>
 
-          {/* Benefits */}
+     
           <div id="benefits" className="grid gap-6 md:grid-cols-3 mb-16">
             {[
               {
@@ -614,7 +609,7 @@ export default function CareersPage() {
             ))}
           </div>
 
-          {/* Testimonial */}
+    
           <div className="bg-white rounded-3xl p-8 md:p-10 shadow-xl animate-on-scroll">
             <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center">
               {/* <div className="relative w-24 h-24 md:w-32 md:h-32">
@@ -641,7 +636,7 @@ export default function CareersPage() {
         </div>
       </section>
 
-      {/* Footer */}
+
       <footer className="bg-gray-900 text-white py-12 md:py-16 px-4 md:px-8">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
           <div>
