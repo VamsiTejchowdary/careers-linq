@@ -2,52 +2,34 @@ import mongoose, { Schema, models } from "mongoose";
 
 const jobApplicationSchema = new Schema(
   {
-    jobTitle: {
-      type: String,
+    jobId: {
+      type: Schema.Types.ObjectId,
+      ref: "JobPosting",
       required: true,
-      default: "Software Engineer",
     },
-    location: {
-      type: String,
-      required: true,
-      default: "Birmingham, AL",
-    },
-    department: {
-      type: String,
-      required: true,
-      default: "Technology",
-    },
-    employmentType: {
-      type: String,
-      required: true,
-      default: "Full Time - In Office",
-    },
-    reportsTo: {
-      type: String,
-      required: true,
-      default: "CTO",
-    },
-    compensationRange: {
-      type: String,
-      required: true,
-      default: "$55,000 - $85,000/year + Stock & Benefits",
-    },
-    applicantName: {
+    name: {
       type: String,
       required: true,
     },
-    applicantEmail: {
+    email: {
       type: String,
       required: true,
+    },
+    phone: {
+      type: String,
+      required: true,
+    },
+    linkedin: {
+      type: String,
+      default: "",
     },
     resume: {
-      type: String, // Store file name or URL (e.g., if uploaded to a service like S3)
+      type: String,
       required: true,
     },
-    status: {
+    coverLetter: {
       type: String,
-      default: "Pending",
-      enum: ["Pending", "Reviewed", "Accepted", "Rejected"],
+      default: "",
     },
   },
   { timestamps: true }
