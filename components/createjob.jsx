@@ -575,7 +575,7 @@ const Header = ({ mobileMenuOpen, setMobileMenuOpen }) => {
                 Careers
               </Link>
               <Link
-                href="/createjob"
+                href="/postjob"
                 className="bg-blue-50 text-blue-700 block px-3 py-2 rounded-md text-base font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
