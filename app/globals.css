@@ -58,3 +58,29 @@ body {
   .animate-slideInFromRight {
     animation: slideInFromRight 1s ease-out forwards;
   }
+  .animate-fadeIn {
+    animation: fadeIn 0.8s ease-in-out;
+  }
+  
+  .animate-fadeInUp {
+    animation: fadeInUp 0.8s ease-in-out;
+  }
+  
+  .animate-slideInFromRight {
+    animation: slideInFromRight 1s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  @keyframes slideInFromRight {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }

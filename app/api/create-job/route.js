@@ -1,5 +1,6 @@
-import { connectMongoDB } from '../../../lib/mongodb'; // Import connectMongoDB function
-import JobPosting from '@/models/JobPosting'; // Import JobPosting model
+// pages/api/create-job.js
+import { connectMongoDB } from '@/lib/mongodb';
+import JobPosting from '@/models/JobPosting';
 import { NextResponse } from 'next/server';
 
 export async function POST(req) {
@@ -16,11 +17,8 @@ export async function POST(req) {
       niceToHaves,
     } = await req.json();
 
-    // Connect to MongoDB
-    console.log("Ikkadiki Vachindhi...");
     await connectMongoDB();
 
-    // Create a new job posting
     const jobPosting = await JobPosting.create({
       jobTitle,
       location,
@@ -48,13 +46,21 @@ export async function POST(req) {
 
 export async function GET(req) {
   try {
-    // Connect to MongoDB
     await connectMongoDB();
 
-    // Fetch all job postings
-    const jobPostings = await JobPosting.find({});
+    const { searchParams } = new URL(req.url, `http://${req.headers.host}`);
+    const id = searchParams.get("id");
 
-    return NextResponse.json(jobPostings, { status: 200 });
+    if (id) {
+      const jobPosting = await JobPosting.findById(id);
+      if (!jobPosting) {
+        return NextResponse.json({ message: "Job posting not found" }, { status: 404 });
+      }
+      return NextResponse.json(jobPosting, { status: 200 });
+    } else {
+      const jobPostings = await JobPosting.find({});
+      return NextResponse.json(jobPostings, { status: 200 });
+    }
   } catch (error) {
     console.error(error);
     return NextResponse.json(

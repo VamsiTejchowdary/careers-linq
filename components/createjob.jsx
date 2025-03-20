@@ -84,7 +84,7 @@ export default function CreateJobForm() {
         setResponsibilities("");
         setNiceToHaves("");
         toast.success("Job posting created successfully!", {
-          onClose: () => router.push("/careers"),
+          onClose: () => router.push("/"),
         });
       } else {
         toast.error("Job posting creation failed!");
