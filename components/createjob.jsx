@@ -6,7 +6,9 @@ import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { User,Menu } from "lucide-react";
+
 
 export default function CreateJobForm() {
   const [jobTitle, setJobTitle] = useState("");
@@ -21,6 +23,7 @@ export default function CreateJobForm() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [formProgress, setFormProgress] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const router = useRouter();
   const departments = ["Engineering", "Sales", "Marketing", "HR", "Operations", "Finance", "Product", "Design"];
@@ -140,43 +143,7 @@ export default function CreateJobForm() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-      <header className="w-full px-6 py-4 flex items-center bg-gradient-to-r from-indigo-700 to-indigo-600 text-white shadow-lg">
-        <Link href="/">
-          <div className="flex items-center">
-            <Image
-              src="/linq.png"
-              alt="Linq Logo"
-              width={120}
-              height={40}
-              className="object-contain"
-            />
-          </div>
-        </Link>
-        <nav className="ml-auto">
-          <ul className="flex space-x-6">
-            <li>
-              <Link href="/" className="text-indigo-100 hover:text-white transition-colors duration-300">
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link href="/about" className="text-indigo-100 hover:text-white transition-colors duration-300">
-                About
-              </Link>
-            </li>
-            <li>
-              <Link href="/careers" className="text-white font-semibold transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-white">
-                Careers
-              </Link>
-            </li>
-            <li>
-              <Link href="/contact" className="text-indigo-100 hover:text-white transition-colors duration-300">
-                Contact
-              </Link>
-            </li>
-          </ul>
-        </nav>
-      </header>
+      <Header mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
 
       <motion.div 
         initial="hidden"
@@ -538,3 +505,93 @@ export default function CreateJobForm() {
     </div>
   );
 }
+const Header = ({ mobileMenuOpen, setMobileMenuOpen }) => {
+  return (
+    <header className="bg-white shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <div className="flex items-center">
+            <div className="h-10 w-10 relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg"></div>
+              <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-2xl">
+                L
+              </div>
+            </div>
+            <span className="ml-3 text-xl font-bold text-gray-900">Linq</span>
+          </div>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex space-x-8">
+            <Link href="/careers" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+              Careers
+            </Link>
+            <Link href="/postjob" className="text-blue-600 hover:text-blue-800 px-3 py-2 rounded-md text-sm font-medium">
+              Post Job
+            </Link>
+            <Link href="/applications" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+              Applications
+            </Link>
+          </nav>
+
+          {/* User Profile */}
+          <div className="hidden md:flex items-center">
+            <div className="bg-blue-100 text-blue-800 w-8 h-8 rounded-full flex items-center justify-center">
+              <User className="h-4 w-4" />
+            </div>
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden">
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-gray-900 hover:bg-gray-100 focus:outline-none"
+            >
+              {mobileMenuOpen ? (
+                <X className="block h-6 w-6" />
+              ) : (
+                <Menu className="block h-6 w-6" />
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile menu, show/hide based on menu state */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden"
+          >
+            <div className="px-2 pt-2 pb-3 space-y-1 shadow-inner bg-gray-50">
+              <Link
+                href="/careers"
+                className="text-gray-600 hover:bg-gray-100 block px-3 py-2 rounded-md text-base font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Careers
+              </Link>
+              <Link
+                href="/createjob"
+                className="bg-blue-50 text-blue-700 block px-3 py-2 rounded-md text-base font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Post Job
+              </Link>
+              <Link
+                href="/applications"
+                className="text-gray-600 hover:bg-gray-100 block px-3 py-2 rounded-md text-base font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Applications
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </header>
+  );
+};
