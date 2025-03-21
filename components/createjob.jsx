@@ -7,7 +7,11 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { User,Menu } from "lucide-react";
+import {
+  User,
+  Menu,
+  X,
+} from "lucide-react";
 
 
 export default function CreateJobForm() {
