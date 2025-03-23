@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
+import  Contact  from "../components/contact";
 
 export default function CareersPage() {
   const [activeTab, setActiveTab] = useState("all");
@@ -133,10 +134,10 @@ export default function CareersPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
       <Head>
-        <title>Careers at Linq | Join Our Team</title>
+        <title>Career Clutch | Join Our Team</title>
         <meta
           name="description"
-          content="Join the Linq team and help us build the future of professional connections"
+          content="Join the Career Clutch team and help us build the future of professional connections"
         />
       </Head>
 
@@ -148,26 +149,26 @@ export default function CareersPage() {
                 <div className="h-10 w-10 relative">
                   <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg"></div>
                   <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-2xl">
-                    L
+                  <span>@</span>
                   </div>
                 </div>
                 <span className="ml-3 text-xl font-bold text-gray-900">
-                  Linq
+                Career Clutch
                 </span>
               </Link>
               <div className="hidden md:ml-6 md:flex md:space-x-8">
-                <Link
+                {/* <Link
                   href="https://linqapp.com/"
                   className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-900"
                 >
                   Home
-                </Link>
-                <Link
+                </Link> */}
+                {/* <Link
                   href="https://linqapp.com/linq-one"
                   className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-900"
                 >
-                  Linq One
-                </Link>
+                  Career Clutch One
+                </Link> */}
                 <Link
                   href="/careers"
                   className="inline-flex items-center px-1 pt-1 border-b-2 border-indigo-500 text-sm font-medium text-indigo-600"
@@ -175,11 +176,15 @@ export default function CareersPage() {
                   Careers
                 </Link>
                 <Link
-                  href="https://linqapp.com/support"
-                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-900"
-                >
-                  Support
-                </Link>
+              href="#contact-section"
+              className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+              onClick={(e) => {
+                e.preventDefault();
+                document.querySelector('#contact-section')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              Contact
+            </Link>
               </div>
             </div>
             <div className="hidden md:ml-6 md:flex md:items-center">
@@ -231,18 +236,18 @@ export default function CareersPage() {
         {/* Mobile menu */}
         <div className={`${isNavOpen ? "block" : "hidden"} md:hidden`}>
           <div className="pt-2 pb-3 space-y-1">
-            <Link
+            {/* <Link
               href="https://linqapp.com/"
               className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800"
             >
               Home
-            </Link>
-            <Link
+            </Link> */}
+            {/* <Link
               href="https://linqapp.com/linq-one"
               className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800"
             >
-              Linq One
-            </Link>
+              Career Clutch One
+            </Link> */}
             <Link
               href="/careers"
               className="block pl-3 pr-4 py-2 border-l-4 border-indigo-500 text-base font-medium text-indigo-700 bg-indigo-50"
@@ -259,10 +264,10 @@ export default function CareersPage() {
           <div className="pt-4 pb-3 border-t border-gray-200">
             <div className="flex items-center px-4">
               <Link
-                href="/contact"
+                href="#contact"
                 className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
               >
-                Apply Now
+                View Jobs
               </Link>
             </div>
           </div>
@@ -415,7 +420,7 @@ export default function CareersPage() {
               Our Vision
             </h2>
             <p className="text-lg md:text-xl text-gray-700 mb-6">
-              At Linq, we're revolutionizing the way professionals connect in
+              At Career Clutch, we're revolutionizing the way professionals connect in
               the digital age. Our platform bridges the gap between virtual and
               in-person networking, creating seamless experiences that feel
               natural and effective.
@@ -488,7 +493,7 @@ export default function CareersPage() {
               Our Key Values
             </h2>
             <p className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto">
-              These principles guide everything we do at Linq and shape our
+              These principles guide everything we do at Career Clutch and shape our
               company culture
             </p>
           </div>
@@ -736,10 +741,10 @@ export default function CareersPage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12 animate-on-scroll">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Life at Linq
+              Life at Career Clutch
             </h2>
             <p className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto">
-              Discover what makes working at Linq a unique and rewarding
+              Discover what makes working at Career Clutch a unique and rewarding
               experience.
             </p>
           </div>
@@ -833,7 +838,7 @@ export default function CareersPage() {
               </div> */}
               <div>
                 <p className="text-lg md:text-xl text-gray-700 italic mb-4">
-                  "Joining Linq has been a game-changer. The supportive culture
+                  "Joining Career Clutch has been a game-changer. The supportive culture
                   and innovative projects have accelerated my growth beyond what
                   I imagined."
                 </p>
@@ -842,7 +847,7 @@ export default function CareersPage() {
                     Sarah Johnson
                   </h4>
                   <p className="text-gray-600">
-                    Senior Software Engineer, 2 years at Linq
+                    Senior Software Engineer, 2 years at Career Clutch
                   </p>
                 </div>
               </div>
@@ -850,7 +855,7 @@ export default function CareersPage() {
           </div>
         </div>
       </section>
-
+      <Contact id="contact"/>
       <footer className="bg-gray-900 text-white py-12 md:py-16 px-4 md:px-8">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
           <div>
@@ -861,7 +866,7 @@ export default function CareersPage() {
                   L
                 </div>
               </div>
-              <span className="ml-3 text-xl font-bold">Linq</span>
+              <span className="ml-3 text-xl font-bold">Career Clutch</span>
             </div>
             <p className="text-gray-400 mb-6">
               Building the future of professional connections.
@@ -939,7 +944,7 @@ export default function CareersPage() {
         </div>
         <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-gray-800 text-center">
           <p className="text-gray-500">
-            © {new Date().getFullYear()} Linq. All rights reserved.
+            © {new Date().getFullYear()} Career Clutch. All rights reserved.
           </p>
         </div>
       </footer>

@@ -13,7 +13,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Linq Careers",
+  title: "Careers Clutch",
+  icons: {
+    icon: "/public/letter-v.png", // Change the path if needed
+  },
   description: "Grow with us",
 };
 

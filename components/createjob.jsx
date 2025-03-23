@@ -7,11 +7,13 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import ContactForm from "../components/contact";
 import {
   User,
   Menu,
   X,
 } from "lucide-react";
+
 
 
 export default function CreateJobForm() {
@@ -166,7 +168,7 @@ export default function CreateJobForm() {
             variants={fadeInUp}
             className="text-gray-600 text-lg"
           >
-            Add a new position to the Linq team
+            Add a new position to the Career Clutch team
           </motion.p>
           
           {/* Progress bar */}
@@ -413,7 +415,6 @@ export default function CreateJobForm() {
           </div>
         </motion.div>
       </motion.div>
-
       <footer className="bg-gray-900 text-white py-12 md:py-16 px-4 md:px-8">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
           <div>
@@ -421,10 +422,10 @@ export default function CreateJobForm() {
               <div className="h-10 w-10 relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg"></div>
                 <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-2xl">
-                  L
+                  <span>@</span>
                 </div>
               </div>
-              <span className="ml-3 text-xl font-bold">Linq</span>
+              <span className="ml-3 text-xl font-bold">Career Clutch</span>
             </div>
             <p className="text-gray-400 mb-6">
               Building the future of professional connections.
@@ -470,10 +471,10 @@ export default function CreateJobForm() {
           <div>
             <h4 className="text-lg font-bold mb-6">Company</h4>
             <ul className="space-y-4">
-              {["About Us", "Careers", "Blog", "Contact"].map((item) => (
+              {["Careers", "Contact"].map((item) => (
                 <li key={item}>
                   <a
-                    href="#"
+                    href={`${item.toLowerCase().replace(" ", "")}`}
                     className="text-gray-400 hover:text-white transition-colors"
                   >
                     {item}
@@ -502,7 +503,7 @@ export default function CreateJobForm() {
         </div>
         <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-gray-800 text-center">
           <p className="text-gray-500">
-            © {new Date().getFullYear()} Linq. All rights reserved.
+            © {new Date().getFullYear()} Career Clutch. All rights reserved.
           </p>
         </div>
       </footer>
@@ -519,10 +520,10 @@ const Header = ({ mobileMenuOpen, setMobileMenuOpen }) => {
             <div className="h-10 w-10 relative">
               <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg"></div>
               <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-2xl">
-                L
+                <span>@</span>
               </div>
             </div>
-            <span className="ml-3 text-xl font-bold text-gray-900">Linq</span>
+            <span className="ml-3 text-xl font-bold text-gray-900">Career Clutch</span>
           </div>
 
           {/* Desktop Navigation */}
