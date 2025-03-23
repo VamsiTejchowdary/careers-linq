@@ -31,6 +31,10 @@ const jobApplicationSchema = new Schema(
       type: String,
       default: "",
     },
+    similarityScore: {
+      type: Number,
+      required: true,
+    },
   },
   { timestamps: true }
 );

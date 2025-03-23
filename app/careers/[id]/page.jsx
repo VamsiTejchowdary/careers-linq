@@ -4,8 +4,8 @@ import Head from "next/head";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { formatDistance } from "date-fns";
-import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle } from 'lucide-react';
+import { motion, AnimatePresence } from "framer-motion";
+import { CheckCircle } from "lucide-react";
 
 export default function JobDetailPage() {
   const [job, setJob] = useState(null);
@@ -21,6 +21,7 @@ export default function JobDetailPage() {
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [similarityScore, setSimilarityScore] = useState(null);
   const params = useParams();
   const id = params?.id;
 
@@ -89,6 +90,7 @@ export default function JobDetailPage() {
 
       if (response.ok) {
         setIsSubmitted(true);
+        setSimilarityScore(result.similarityScore);
         setFormData({
           name: "",
           email: "",
@@ -632,186 +634,214 @@ export default function JobDetailPage() {
               </h2>
 
               <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-      <AnimatePresence mode="wait">
-        {!isSubmitted ? (
-          <motion.div
-            key="form"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Submit Your Application</h2>
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Full Name *
-                </label>
-                <motion.input
-                  whileFocus={{ scale: 1.01 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                  type="text"
-                  name="name"
-                  required
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  placeholder="John Doe"
-                />
-              </div>
+                <AnimatePresence mode="wait">
+                  {!isSubmitted ? (
+                    <motion.div
+                      key="form"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <h2 className="text-2xl font-bold text-gray-800 mb-6">
+                        Submit Your Application
+                      </h2>
+                      <form onSubmit={handleSubmit} className="space-y-5">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Full Name *
+                          </label>
+                          <motion.input
+                            whileFocus={{ scale: 1.01 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                            type="text"
+                            name="name"
+                            required
+                            value={formData.name}
+                            onChange={handleInputChange}
+                            className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            placeholder="John Doe"
+                          />
+                        </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email Address *
-                </label>
-                <motion.input
-                  whileFocus={{ scale: 1.01 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                  type="email"
-                  name="email"
-                  required
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  placeholder="email@example.com"
-                />
-              </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Email Address *
+                          </label>
+                          <motion.input
+                            whileFocus={{ scale: 1.01 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                            type="email"
+                            name="email"
+                            required
+                            value={formData.email}
+                            onChange={handleInputChange}
+                            className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            placeholder="email@example.com"
+                          />
+                        </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Phone Number *
-                </label>
-                <motion.input
-                  whileFocus={{ scale: 1.01 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                  type="tel"
-                  name="phone"
-                  required
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  placeholder="+1 (555) 123-4567"
-                />
-              </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Phone Number *
+                          </label>
+                          <motion.input
+                            whileFocus={{ scale: 1.01 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                            type="tel"
+                            name="phone"
+                            required
+                            value={formData.phone}
+                            onChange={handleInputChange}
+                            className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            placeholder="+1 (555) 123-4567"
+                          />
+                        </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  LinkedIn Profile
-                </label>
-                <motion.input
-                  whileFocus={{ scale: 1.01 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                  type="url"
-                  name="linkedin"
-                  value={formData.linkedin}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  placeholder="https://linkedin.com/in/yourprofile"
-                />
-              </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            LinkedIn Profile
+                          </label>
+                          <motion.input
+                            whileFocus={{ scale: 1.01 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                            type="url"
+                            name="linkedin"
+                            value={formData.linkedin}
+                            onChange={handleInputChange}
+                            className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            placeholder="https://linkedin.com/in/yourprofile"
+                          />
+                        </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Resume/CV *
-                </label>
-                <div className="relative">
-                  <motion.input
-                    whileFocus={{ scale: 1.01 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                    type="file"
-                    name="resume"
-                    accept=".pdf,.doc,.docx"
-                    required
-                    onChange={handleFileChange}
-                    className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-                  />
-                </div>
-              </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Resume/CV *
+                          </label>
+                          <div className="relative">
+                            <motion.input
+                              whileFocus={{ scale: 1.01 }}
+                              transition={{ type: "spring", stiffness: 300 }}
+                              type="file"
+                              name="resume"
+                              accept=".pdf,.doc,.docx"
+                              required
+                              onChange={handleFileChange}
+                              className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                            />
+                          </div>
+                        </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Cover Letter
-                </label>
-                <motion.textarea
-                  whileFocus={{ scale: 1.01 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                  name="coverLetter"
-                  rows="4"
-                  value={formData.coverLetter}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  placeholder="Tell us why you're interested in this position..."
-                ></motion.textarea>
-              </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Cover Letter
+                          </label>
+                          <motion.textarea
+                            whileFocus={{ scale: 1.01 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                            name="coverLetter"
+                            rows="4"
+                            value={formData.coverLetter}
+                            onChange={handleInputChange}
+                            className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            placeholder="Tell us why you're interested in this position..."
+                          ></motion.textarea>
+                        </div>
 
-              <motion.button
-                type="submit"
-                disabled={isLoading}
-                className="w-full px-6 py-3 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition-all disabled:bg-indigo-400 disabled:cursor-not-allowed"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                {isLoading ? (
-                  <span className="flex items-center justify-center">
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Submitting...
-                  </span>
-                ) : (
-                  "Submit Application"
-                )}
-              </motion.button>
-            </form>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="success"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, type: "spring", stiffness: 100 }}
-            className="text-center py-12"
-          >
-            <motion.div
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="flex justify-center"
-            >
-              <CheckCircle size={80} className="text-green-500" />
-            </motion.div>
-            <motion.h2
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.4, duration: 0.5 }}
-              className="mt-6 text-2xl font-bold text-gray-800"
-            >
-              Got you!
-            </motion.h2>
-            <motion.p
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.6, duration: 0.5 }}
-              className="mt-4 text-lg text-gray-600"
-            >
-              We will look forward to connecting with you soon. Thank you for your application!
-            </motion.p>
-            <motion.button
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.8, duration: 0.5 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setIsSubmitted(false)}
-              className="mt-8 px-6 py-2 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition-all"
-            >
-              Submit Another Application
-            </motion.button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+                        <motion.button
+                          type="submit"
+                          disabled={isLoading}
+                          className="w-full px-6 py-3 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition-all disabled:bg-indigo-400 disabled:cursor-not-allowed"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          {isLoading ? (
+                            <span className="flex items-center justify-center">
+                              <svg
+                                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                                ></circle>
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                ></path>
+                              </svg>
+                              Submitting...
+                            </span>
+                          ) : (
+                            "Submit Application"
+                          )}
+                        </motion.button>
+                      </form>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="success"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{
+                        duration: 0.5,
+                        type: "spring",
+                        stiffness: 100,
+                      }}
+                      className="text-center py-12"
+                    >
+                      <motion.div
+                        initial={{ scale: 0.5, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.2, duration: 0.5 }}
+                        className="flex justify-center"
+                      >
+                        <CheckCircle size={80} className="text-green-500" />
+                      </motion.div>
+                      <motion.h2
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.4, duration: 0.5 }}
+                        className="mt-6 text-2xl font-bold text-gray-800"
+                      >
+                        {isSubmitted && similarityScore !== null && (
+                          <motion.p /* ... */>
+                            Resume Match Score: {similarityScore}/100
+                          </motion.p>
+                        )}
+                        Got you!
+                      </motion.h2>
+                      <motion.p
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.6, duration: 0.5 }}
+                        className="mt-4 text-lg text-gray-600"
+                      >
+                        We will look forward to connecting with you soon. Thank
+                        you for your application!
+                      </motion.p>
+                      <motion.button
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.8, duration: 0.5 }}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setIsSubmitted(false)}
+                        className="mt-8 px-6 py-2 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition-all"
+                      >
+                        Submit Another Application
+                      </motion.button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           </div>
         </div>
@@ -909,6 +939,5 @@ export default function JobDetailPage() {
         </div>
       </footer>
     </div>
-    
   );
 }
