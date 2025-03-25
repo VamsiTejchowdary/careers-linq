@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { formatDistance } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, AlertCircle, FileSearch } from "lucide-react";
 
 export default function JobDetailPage() {
   const [job, setJob] = useState(null);
@@ -22,6 +22,7 @@ export default function JobDetailPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [similarityScore, setSimilarityScore] = useState(null);
+  const [isCheckingScore, setIsCheckingScore] = useState(false);
   const params = useParams();
   const id = params?.id;
 
@@ -60,6 +61,36 @@ export default function JobDetailPage() {
 
   const handleFileChange = (e) => {
     setFormData((prev) => ({ ...prev, resume: e.target.files[0] }));
+  };
+
+  const handleCheckScore = async () => {
+    // Validate resume is uploaded
+    if (!formData.resume) {
+      alert("Please upload a resume first");
+      return;
+    }
+
+    setIsCheckingScore(true);
+    setSimilarityScore(null);
+
+    try {
+      // Simulate API call to check resume match
+      // const formDataToSend = new FormData();
+      // formDataToSend.append('resume', formData.resume);
+
+      // const response = await fetch('/api/check-resume-match', {
+      //   method: 'POST',
+      //   body: formDataToSend
+      // });
+
+      // const result = await response.json();
+      setSimilarityScore(71);
+    } catch (error) {
+      console.error("Error checking resume match:", error);
+      alert("Failed to check resume match. Please try again.");
+    } finally {
+      setIsCheckingScore(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -646,6 +677,7 @@ export default function JobDetailPage() {
                       <h2 className="text-2xl font-bold text-gray-800 mb-6">
                         Submit Your Application
                       </h2>
+
                       <form onSubmit={handleSubmit} className="space-y-5">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -718,7 +750,7 @@ export default function JobDetailPage() {
                           <label className="block text-sm font-medium text-gray-700 mb-1">
                             Resume/CV *
                           </label>
-                          <div className="relative">
+                          <div className="relative flex items-center">
                             <motion.input
                               whileFocus={{ scale: 1.01 }}
                               transition={{ type: "spring", stiffness: 300 }}
@@ -729,7 +761,75 @@ export default function JobDetailPage() {
                               onChange={handleFileChange}
                               className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
                             />
+
+                            {formData.resume && (
+                              <motion.button
+                                type="button"
+                                onClick={handleCheckScore}
+                                disabled={isCheckingScore}
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                className="ml-2 p-2 bg-indigo-100 text-indigo-600 rounded-full hover:bg-indigo-200 transition-all disabled:bg-indigo-50 disabled:text-indigo-300 flex items-center justify-center"
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                              >
+                                {isCheckingScore ? (
+                                  <svg
+                                    className="animate-spin h-5 w-5"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <circle
+                                      className="opacity-25"
+                                      cx="12"
+                                      cy="12"
+                                      r="10"
+                                      stroke="currentColor"
+                                      strokeWidth="4"
+                                    ></circle>
+                                    <path
+                                      className="opacity-75"
+                                      fill="currentColor"
+                                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                    ></path>
+                                  </svg>
+                                ) : (
+                                  <FileSearch size={20} />
+                                )}
+                              </motion.button>
+                            )}
                           </div>
+
+                          {/* Score display below resume */}
+                          {similarityScore !== null && !isCheckingScore && (
+                            <motion.div
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="flex items-center space-x-2 mt-2"
+                            >
+                              {similarityScore >= 70 ? (
+                                <CheckCircle
+                                  size={24}
+                                  className="text-green-500"
+                                />
+                              ) : (
+                                <AlertCircle
+                                  size={24}
+                                  className="text-yellow-500"
+                                />
+                              )}
+                              <span
+                                className={`font-semibold ${
+                                  similarityScore >= 70
+                                    ? "text-green-600"
+                                    : "text-yellow-600"
+                                }`}
+                              >
+                                There is an {similarityScore}% match
+                              </span>
+                            </motion.div>
+                          )}
                         </div>
 
                         <div>
@@ -811,8 +911,13 @@ export default function JobDetailPage() {
                         transition={{ delay: 0.4, duration: 0.5 }}
                         className="mt-6 text-2xl font-bold text-gray-800"
                       >
-                        {isSubmitted && similarityScore !== null && (
-                          <motion.p /* ... */>
+                        {similarityScore !== null && (
+                          <motion.p
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.3, duration: 0.5 }}
+                            className="text-lg text-gray-600 mb-2"
+                          >
                             Resume Match Score: {similarityScore}/100
                           </motion.p>
                         )}

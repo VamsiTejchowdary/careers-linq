@@ -132,7 +132,7 @@ async function extractTextFromPdf(pdfBuffer) {
   try {
     console.log("Sending PDF to Cloudmersive API, buffer size:", pdfBuffer.length);
 
-    const apiKey = "057998fc-3118-4e3c-a8c6-b69064e3255c"; // Your Cloudmersive API key
+    const apiKey = process.env.CLOUDMERSIVE_API_KEY;
     const url = "https://api.cloudmersive.com/convert/pdf/to/txt";
 
     const response = await fetch(url, {
