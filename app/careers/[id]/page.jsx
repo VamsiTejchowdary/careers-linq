@@ -74,17 +74,23 @@ export default function JobDetailPage() {
     setSimilarityScore(null);
 
     try {
-      // Simulate API call to check resume match
-      // const formDataToSend = new FormData();
-      // formDataToSend.append('resume', formData.resume);
-
-      // const response = await fetch('/api/check-resume-match', {
-      //   method: 'POST',
-      //   body: formDataToSend
-      // });
-
-      // const result = await response.json();
-      setSimilarityScore(71);
+      // Prepare form data for API call
+      const formDataToSend = new FormData();
+      formDataToSend.append("jobId", id); // Ensure jobId is passed as a prop
+      formDataToSend.append("resume", formData.resume);
+  
+      // Make API call to check resume match
+      const response = await fetch("/api/resume-score-cal", {
+        method: "POST",
+        body: formDataToSend,
+      });
+  
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status} - ${response.statusText}`);
+      }
+  
+      const result = await response.json();
+      setSimilarityScore(result.similarityScore); // Set the score from API response
     } catch (error) {
       console.error("Error checking resume match:", error);
       alert("Failed to check resume match. Please try again.");
@@ -110,6 +116,7 @@ export default function JobDetailPage() {
     data.append("coverLetter", formData.coverLetter);
     data.append("resume", formData.resume);
     data.append("jobId", id);
+    data.append("similarityScore", similarityScore);
 
     try {
       const response = await fetch("/api/apply-job", {
@@ -122,6 +129,7 @@ export default function JobDetailPage() {
       if (response.ok) {
         setIsSubmitted(true);
         setSimilarityScore(result.similarityScore);
+        setIsCheckingScore(true);
         setFormData({
           name: "",
           email: "",
@@ -130,6 +138,7 @@ export default function JobDetailPage() {
           coverLetter: "",
           resume: null,
         });
+
       } else {
         alert(result.message || "Submission failed.");
       }
