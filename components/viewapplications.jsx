@@ -169,55 +169,76 @@ const ApplicationsPage = () => {
                     transition={{ duration: 0.3, delay: index * 0.1 }}
                     className="bg-white rounded-xl shadow-md overflow-hidden"
                   >
+                    
                     {/* Card header - always visible */}
-                    <div
-                      className={`p-6 cursor-pointer transition-colors ${
-                        expandedId === app._id
-                          ? "bg-blue-50"
-                          : "hover:bg-gray-50"
-                      }`}
-                      onClick={() => toggleExpand(app._id)}
-                    >
-                      <div className="flex flex-col md:flex-row md:items-center justify-between">
-                        <div className="flex-1">
-                          <h2 className="text-xl font-bold text-gray-800">
-                            {app.name}
-                          </h2>
-                          <div className="flex flex-wrap items-center mt-2 text-gray-600">
-                            <div className="flex items-center mr-4 mb-2 md:mb-0">
-                              <Briefcase className="h-4 w-4 mr-1 text-blue-600" />
-                              <span>
-                                {app.jobId
-                                  ? app.jobId.jobTitle
-                                  : "Job Not Found"}
-                              </span>
-                            </div>
-                            {app.jobId?.department && (
-                              <div className="flex items-center mr-4 mb-2 md:mb-0">
-                                <Building2 className="h-4 w-4 mr-1 text-blue-600" />
-                                <span>{app.jobId.department}</span>
-                              </div>
-                            )}
-                            <div className="flex items-center">
-                              <Calendar className="h-4 w-4 mr-1 text-blue-600" />
-                              <span className="text-sm">
-                                {new Date(app.createdAt).toLocaleDateString()}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex items-center mt-4 md:mt-0">
-                          <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm mr-3">
-                            New
-                          </div>
-                          {expandedId === app._id ? (
-                            <ChevronUp className="h-5 w-5 text-gray-500" />
-                          ) : (
-                            <ChevronDown className="h-5 w-5 text-gray-500" />
-                          )}
-                        </div>
-                      </div>
-                    </div>
+<div
+  className={`p-6 cursor-pointer transition-colors ${
+    expandedId === app._id
+      ? "bg-blue-50"
+      : "hover:bg-gray-50"
+  }`}
+  onClick={() => toggleExpand(app._id)}
+>
+  <div className="flex flex-col md:flex-row md:items-center justify-between">
+    <div className="flex-1">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold text-gray-800">
+          {app.name}
+        </h2>
+      </div>
+      <div className="flex flex-wrap items-center mt-2 text-gray-600">
+        <div className="flex items-center mr-4 mb-2 md:mb-0">
+          <Briefcase className="h-4 w-4 mr-1 text-blue-600" />
+          <span>
+            {app.jobId
+              ? app.jobId.jobTitle
+              : "Job Not Found"}
+          </span>
+        </div>
+        {app.jobId?.department && (
+          <div className="flex items-center mr-4 mb-2 md:mb-0">
+            <Building2 className="h-4 w-4 mr-1 text-blue-600" />
+            <span>{app.jobId.department}</span>
+          </div>
+        )}
+        <div className="flex items-center">
+          <Calendar className="h-4 w-4 mr-1 text-blue-600" />
+          <span className="text-sm">
+            {new Date(app.createdAt).toLocaleDateString()}
+          </span>
+        </div>
+      </div>
+    </div>
+    <div className="flex items-center mt-4 md:mt-0">
+      {/* Resume Score Badge */}
+      <div 
+        className={`
+          mr-3 px-3 py-1 rounded-full text-sm font-semibold
+          ${
+            app.similarityScore >= 70 
+              ? 'bg-green-100 text-green-800' 
+              : app.similarityScore >= 40 
+                ? 'bg-yellow-100 text-yellow-800' 
+                : 'bg-red-100 text-red-800'
+          }
+        `}
+        title="Resume Match Score"
+      >
+        {app.similarityScore}%
+      </div>
+      
+      <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm mr-3">
+        New
+      </div>
+      
+      {expandedId === app._id ? (
+        <ChevronUp className="h-5 w-5 text-gray-500" />
+      ) : (
+        <ChevronDown className="h-5 w-5 text-gray-500" />
+      )}
+    </div>
+  </div>
+</div>
 
                     {/* Expanded content */}
                     <AnimatePresence>
@@ -381,7 +402,9 @@ const Header = ({ mobileMenuOpen, setMobileMenuOpen }) => {
                 @
               </div>
             </div>
-            <span className="ml-3 text-xl font-bold text-gray-900">Career Clutch</span>
+            <span className="ml-3 text-xl font-bold text-gray-900">
+              Career Clutch
+            </span>
           </div>
 
           {/* Desktop Navigation */}
@@ -472,62 +495,78 @@ const Header = ({ mobileMenuOpen, setMobileMenuOpen }) => {
 const Footer = () => {
   return (
     <footer className="bg-gray-900 text-white py-12 md:py-16 px-4 md:px-8">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-          <div>
-            <div className="flex items-center mb-6">
-              <div className="h-10 w-10 relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg"></div>
-                <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-2xl">
-                  @
-                </div>
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+        <div>
+          <div className="flex items-center mb-6">
+            <div className="h-10 w-10 relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg"></div>
+              <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-2xl">
+                @
               </div>
-              <span className="ml-3 text-xl font-bold">Career Clutch</span>
             </div>
-            <p className="text-gray-400 mb-6">
-              Building the future of professional connections.
-            </p>
-            <div className="flex space-x-4">
-              {[
-                {
-                  icon: "M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z",
-                  platform: "Facebook",
-                  url: "https://www.facebook.com/thelinqapp",
-                },
-                {
-                  icon: "M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84",
-                  platform: "Twitter",
-                  url: "https://x.com/thelinqapp",
-                },
-                {
-                  icon: "M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z",
-                  platform: "LinkedIn",
-                  url: "https://www.linkedin.com/company/linqapp/",
-                },
-              ].map((social, index) => (
-                <a
-                  key={index}
-                  href={social.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-white transition-colors"
-                  aria-label={social.platform}
-                >
-                  <svg
-                    className="w-6 h-6"
-                    fill="currentColor"
-                    viewBox={social.viewBox || "0 0 24 24"} // Use custom viewBox if provided, else default to 24x24
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d={social.icon}></path>
-                  </svg>
-                </a>
-              ))}
-            </div>
+            <span className="ml-3 text-xl font-bold">Career Clutch</span>
           </div>
-          <div>
-            <h4 className="text-lg font-bold mb-6">Company</h4>
-            <ul className="space-y-4">
-              {["Careers", "Contact"].map((item) => (
+          <p className="text-gray-400 mb-6">
+            Building the future of professional connections.
+          </p>
+          <div className="flex space-x-4">
+            {[
+              {
+                icon: "M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z",
+                platform: "Facebook",
+                url: "https://www.facebook.com/thelinqapp",
+              },
+              {
+                icon: "M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84",
+                platform: "Twitter",
+                url: "https://x.com/thelinqapp",
+              },
+              {
+                icon: "M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z",
+                platform: "LinkedIn",
+                url: "https://www.linkedin.com/company/linqapp/",
+              },
+            ].map((social, index) => (
+              <a
+                key={index}
+                href={social.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors"
+                aria-label={social.platform}
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="currentColor"
+                  viewBox={social.viewBox || "0 0 24 24"} // Use custom viewBox if provided, else default to 24x24
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d={social.icon}></path>
+                </svg>
+              </a>
+            ))}
+          </div>
+        </div>
+        <div>
+          <h4 className="text-lg font-bold mb-6">Company</h4>
+          <ul className="space-y-4">
+            {["Careers", "Contact"].map((item) => (
+              <li key={item}>
+                <a
+                  href="#"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  {item}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h4 className="text-lg font-bold mb-6">Legal</h4>
+          <ul className="space-y-4">
+            {["Privacy Policy", "Terms of Service", "Cookie Policy"].map(
+              (item) => (
                 <li key={item}>
                   <a
                     href="#"
@@ -536,33 +575,17 @@ const Footer = () => {
                     {item}
                   </a>
                 </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h4 className="text-lg font-bold mb-6">Legal</h4>
-            <ul className="space-y-4">
-              {["Privacy Policy", "Terms of Service", "Cookie Policy"].map(
-                (item) => (
-                  <li key={item}>
-                    <a
-                      href="#"
-                      className="text-gray-400 hover:text-white transition-colors"
-                    >
-                      {item}
-                    </a>
-                  </li>
-                )
-              )}
-            </ul>
-          </div>
+              )
+            )}
+          </ul>
         </div>
-        <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-gray-800 text-center">
-          <p className="text-gray-500">
-            © {new Date().getFullYear()} Career Clutch. All rights reserved.
-          </p>
-        </div>
-      </footer>
+      </div>
+      <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-gray-800 text-center">
+        <p className="text-gray-500">
+          © {new Date().getFullYear()} Career Clutch. All rights reserved.
+        </p>
+      </div>
+    </footer>
   );
 };
 
