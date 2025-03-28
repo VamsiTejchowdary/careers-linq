@@ -863,7 +863,7 @@ export default function CareersPage() {
               <div className="h-10 w-10 relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg"></div>
                 <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-2xl">
-                  L
+                  @
                 </div>
               </div>
               <span className="ml-3 text-xl font-bold">Career Clutch</span>

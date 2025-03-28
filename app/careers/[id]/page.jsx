@@ -205,17 +205,17 @@ export default function JobDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Head>
-        <title>{job.jobTitle} | Linq Careers</title>
+        <title>{job.jobTitle} | Career Clutch Careers</title>
         <meta
           name="description"
-          content={`Apply for ${job.jobTitle} at Linq`}
+          content={`Apply for ${job.jobTitle} at Career Clutch`}
         />
       </Head>
 
       <header className="w-full px-6 py-4 bg-indigo-600 text-white shadow-md">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <Link href="/">
-            <span className="text-2xl font-bold">Linq</span>
+            <span className="text-2xl font-bold">Career Clutch</span>
           </Link>
           <Link
             href="/careers"
@@ -526,7 +526,7 @@ export default function JobDetailPage() {
                       d="M13 10V3L4 14h7v7l9-11h-7z"
                     />
                   </svg>
-                  Why Join Linq?
+                  Why Join Career Clutch?
                 </h2>
                 <ul className="space-y-3">
                   <li className="flex items-start">
@@ -970,7 +970,7 @@ export default function JobDetailPage() {
                   L
                 </div>
               </div>
-              <span className="ml-3 text-xl font-bold">Linq</span>
+              <span className="ml-3 text-xl font-bold">Career Clutch</span>
             </div>
             <p className="text-gray-400 mb-6">
               Building the future of professional connections.
@@ -1048,7 +1048,7 @@ export default function JobDetailPage() {
         </div>
         <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-gray-800 text-center">
           <p className="text-gray-500">
-            © {new Date().getFullYear()} Linq. All rights reserved.
+            © {new Date().getFullYear()} Career Clutch. All rights reserved.
           </p>
         </div>
       </footer>
