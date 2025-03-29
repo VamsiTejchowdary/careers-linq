@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import { put } from "@vercel/blob";
 import Busboy from "busboy";
 
+
 export const config = {
   api: {
     bodyParser: false,
@@ -54,6 +55,13 @@ export async function POST(req) {
     const job = await Job.findById(jobId);
     if (!job) {
       return NextResponse.json({ message: "Job not found." }, { status: 404 });
+    }
+    
+    if (email) {
+      const emailExsist = await JobApplication.findOne({ jobId: jobId, email: email });
+      if (emailExsist) {
+        return NextResponse.json({ message: "You Have already applied for this position." }, { status: 404 });
+      }
     }
 
     if (!files.resume) {

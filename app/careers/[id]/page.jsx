@@ -6,6 +6,8 @@ import { useParams } from "next/navigation";
 import { formatDistance } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle, AlertCircle, FileSearch } from "lucide-react";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer, toast } from "react-toastify";
 
 export default function JobDetailPage() {
   const [job, setJob] = useState(null);
@@ -78,17 +80,19 @@ export default function JobDetailPage() {
       const formDataToSend = new FormData();
       formDataToSend.append("jobId", id); // Ensure jobId is passed as a prop
       formDataToSend.append("resume", formData.resume);
-  
+
       // Make API call to check resume match
       const response = await fetch("/api/resume-score-cal", {
         method: "POST",
         body: formDataToSend,
       });
-  
+
       if (!response.ok) {
-        throw new Error(`API error: ${response.status} - ${response.statusText}`);
+        throw new Error(
+          `API error: ${response.status} - ${response.statusText}`
+        );
       }
-  
+
       const result = await response.json();
       setSimilarityScore(result.similarityScore); // Set the score from API response
     } catch (error) {
@@ -125,7 +129,7 @@ export default function JobDetailPage() {
       });
 
       const result = await response.json();
-
+  
       if (response.ok) {
         setIsSubmitted(true);
         setSimilarityScore(result.similarityScore);
@@ -138,12 +142,11 @@ export default function JobDetailPage() {
           coverLetter: "",
           resume: null,
         });
-
       } else {
-        alert(result.message || "Submission failed.");
+        toast.error(result.message || "Failed to submit application",);
       }
     } catch (error) {
-      console.error("Error submitting application:", error);
+      console.log("Error submitting application:", error);
       alert("Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
@@ -204,6 +207,18 @@ export default function JobDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <Head>
         <title>{job.jobTitle} | Career Clutch Careers</title>
         <meta
