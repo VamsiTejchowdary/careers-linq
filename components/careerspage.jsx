@@ -3,7 +3,8 @@ import { useState, useEffect, useRef } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
-import  Contact  from "../components/contact";
+import Contact from "../components/contact";
+import { useRouter } from "next/navigation";
 
 export default function CareersPage() {
   const [activeTab, setActiveTab] = useState("all");
@@ -12,8 +13,12 @@ export default function CareersPage() {
   const [error, setError] = useState(null);
   const [activeCTA, setActiveCTA] = useState(0);
   const [isNavOpen, setIsNavOpen] = useState(false);
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [user, setUser] = useState(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const ctaSliderRef = useRef(null);
+  const router = useRouter();
 
   const ctaContent = [
     {
@@ -120,6 +125,40 @@ export default function CareersPage() {
     };
   }, []);
 
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch("/api/verify-token", {
+          credentials: "include",
+        });
+        if (response.ok) {
+          setIsSignedIn(true);
+          const userData = await fetch("/api/user-profile", {
+            credentials: "include",
+          });
+          if (userData.ok) {
+            const data = await userData.json();
+            setUser(data.user);
+          }
+        } else {
+          setIsSignedIn(false);
+          setUser(null);
+        }
+      } catch (err) {
+        setIsSignedIn(false);
+        setUser(null);
+      }
+    };
+    checkAuth();
+  }, []);
+
+  const handleLogout = async () => {
+    await fetch("/api/logout", { method: "POST", credentials: "include" });
+    setIsSignedIn(false);
+    setUser(null);
+    router.push("/");
+  };
+
   const departmentsWithPostings = Array.from(
     new Set(positions.map((position) => position.department))
   ).filter((dept) => allDepartments.includes(dept));
@@ -149,26 +188,14 @@ export default function CareersPage() {
                 <div className="h-10 w-10 relative">
                   <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg"></div>
                   <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-2xl">
-                  <span>@</span>
+                    <span>@</span>
                   </div>
                 </div>
                 <span className="ml-3 text-xl font-bold text-gray-900">
-                Career Clutch
+                  Career Clutch
                 </span>
               </Link>
               <div className="hidden md:ml-6 md:flex md:space-x-8">
-                {/* <Link
-                  href="https://linqapp.com/"
-                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-900"
-                >
-                  Home
-                </Link> */}
-                {/* <Link
-                  href="https://linqapp.com/linq-one"
-                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-900"
-                >
-                  Career Clutch One
-                </Link> */}
                 <Link
                   href="/careers"
                   className="inline-flex items-center px-1 pt-1 border-b-2 border-indigo-500 text-sm font-medium text-indigo-600"
@@ -176,59 +203,149 @@ export default function CareersPage() {
                   Careers
                 </Link>
                 <Link
-              href="#contact-section"
-              className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-              onClick={(e) => {
-                e.preventDefault();
-                document.querySelector('#contact-section')?.scrollIntoView({ behavior: 'smooth' });
-              }}
-            >
-              Contact
-            </Link>
+                  href="#contact-section"
+                  className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document
+                      .querySelector("#contact-section")
+                      ?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                >
+                  Contact
+                </Link>
               </div>
             </div>
-            <div className="hidden md:ml-6 md:flex md:items-center">
-              <Link
-                href="/#openings"
-                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
-              >
-                View Jobs
-              </Link>
-            </div>
-            <div className="-mr-2 flex items-center md:hidden">
-              <button
-                onClick={() => setIsNavOpen(!isNavOpen)}
-                className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none"
-              >
-                <svg
-                  className={`${isNavOpen ? "hidden" : "block"} h-6 w-6`}
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+            <div className="flex items-center">
+              {/* Profile/Sign-In Dropdown - IMPROVED */}
+              <div className="relative">
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="flex items-center text-gray-600 hover:text-gray-900 focus:outline-none"
+                  aria-expanded={isDropdownOpen}
+                  aria-haspopup="true"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
-                <svg
-                  className={`${isNavOpen ? "block" : "hidden"} h-6 w-6`}
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+                  {isSignedIn ? (
+                    <div className="flex items-center">
+                      <span className="hidden sm:block mr-2 text-sm font-medium">
+                        {user?.firstName}
+                      </span>
+                      <div className="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center text-white">
+                        <svg
+                          className="h-6 w-6"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+                        </svg>
+                      </div>
+                      <svg
+                        className="ml-1 h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </div>
+                  ) : (
+                    <div className="flex items-center">
+                      <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">
+                        <svg
+                          className="h-6 w-6"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+                        </svg>
+                      </div>
+                      <span className="ml-1 text-sm font-medium">Sign In</span>
+                    </div>
+                  )}
+                </button>
+
+                {/* Dropdown Menu */}
+                {isDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    {isSignedIn ? (
+                      <>
+                        <Link
+                          href="/profile"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          onClick={() => setIsDropdownOpen(false)}
+                        >
+                          Profile
+                        </Link>
+                        <button
+                          onClick={() => {
+                            handleLogout();
+                            setIsDropdownOpen(false);
+                          }}
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          Sign Out
+                        </button>
+                      </>
+                    ) : (
+                      <Link
+                        href="/user/signin"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setIsDropdownOpen(false)}
+                      >
+                        Sign In
+                      </Link>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Mobile Menu Button */}
+              <div className="-mr-2 flex items-center md:hidden ml-4">
+                <button
+                  onClick={() => setIsNavOpen(!isNavOpen)}
+                  className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none"
+                  aria-expanded={isNavOpen}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
+                  <span className="sr-only">
+                    {isNavOpen ? "Close menu" : "Open menu"}
+                  </span>
+                  <svg
+                    className={`${isNavOpen ? "hidden" : "block"} h-6 w-6`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
+                  </svg>
+                  <svg
+                    className={`${isNavOpen ? "block" : "hidden"} h-6 w-6`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -236,18 +353,6 @@ export default function CareersPage() {
         {/* Mobile menu */}
         <div className={`${isNavOpen ? "block" : "hidden"} md:hidden`}>
           <div className="pt-2 pb-3 space-y-1">
-            {/* <Link
-              href="https://linqapp.com/"
-              className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800"
-            >
-              Home
-            </Link> */}
-            {/* <Link
-              href="https://linqapp.com/linq-one"
-              className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800"
-            >
-              Career Clutch One
-            </Link> */}
             <Link
               href="/careers"
               className="block pl-3 pr-4 py-2 border-l-4 border-indigo-500 text-base font-medium text-indigo-700 bg-indigo-50"
@@ -255,29 +360,53 @@ export default function CareersPage() {
               Careers
             </Link>
             <Link
-              href="https://linqapp.com/support"
+              href="#contact-section"
               className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800"
+              onClick={(e) => {
+                e.preventDefault();
+                document
+                  .querySelector("#contact-section")
+                  ?.scrollIntoView({ behavior: "smooth" });
+                setIsNavOpen(false);
+              }}
             >
               Contact
             </Link>
-          </div>
-          <div className="pt-4 pb-3 border-t border-gray-200">
-            <div className="flex items-center px-4">
+            {isSignedIn ? (
+              <>
+                <Link
+                  href="/user/profile"
+                  className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800"
+                  onClick={() => setIsNavOpen(false)}
+                >
+                  Profile
+                </Link>
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setIsNavOpen(false);
+                  }}
+                  className="block w-full text-left pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
               <Link
-                href="#contact"
-                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                href="/user/signin"
+                className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800"
+                onClick={() => setIsNavOpen(false)}
               >
-                View Jobs
+                Sign In
               </Link>
-            </div>
+            )}
           </div>
         </div>
       </nav>
 
+      {/* Rest of the page remains unchanged */}
       <div className="relative h-[90vh] w-full overflow-hidden pt-16">
         <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 opacity-90"></div>
-        {/* <div className="absolute inset-0 bg-[url('/images/team-bg.jpg')] bg-cover bg-center mix-blend-overlay"></div> */}
-
         <div className="absolute inset-0">
           <div
             className="absolute top-1/4 left-1/4 w-4 h-4 bg-white rounded-full animate-ping opacity-75 parallax-element"
@@ -299,7 +428,6 @@ export default function CareersPage() {
             data-speed="0.4"
             style={{ animationDuration: "3.2s", animationDelay: "0.7s" }}
           ></div>
-
           <div
             className="absolute top-1/2 left-1/5 w-6 h-6 bg-white/30 rounded-full animate-pulse opacity-50 parallax-element"
             data-speed="0.15"
@@ -313,7 +441,6 @@ export default function CareersPage() {
             data-speed="0.35"
           ></div>
         </div>
-
         <div
           className="absolute w-64 h-64 bg-white/5 rounded-full -top-20 -left-20 animate-pulse parallax-element"
           data-speed="0.1"
@@ -328,7 +455,6 @@ export default function CareersPage() {
           data-speed="0.2"
           style={{ animationDelay: "0.5s" }}
         ></div>
-
         <div className="relative flex h-full items-center justify-center px-8">
           <div className="text-center max-w-4xl transform transition-all duration-700 animate-fadeIn">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fadeInUp">
@@ -351,7 +477,6 @@ export default function CareersPage() {
             </p>
           </div>
         </div>
-
         <div className="absolute bottom-0 left-0 right-0">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -420,10 +545,10 @@ export default function CareersPage() {
               Our Vision
             </h2>
             <p className="text-lg md:text-xl text-gray-700 mb-6">
-              At Career Clutch, we're revolutionizing the way professionals connect in
-              the digital age. Our platform bridges the gap between virtual and
-              in-person networking, creating seamless experiences that feel
-              natural and effective.
+              At Career Clutch, we're revolutionizing the way professionals
+              connect in the digital age. Our platform bridges the gap between
+              virtual and in-person networking, creating seamless experiences
+              that feel natural and effective.
             </p>
             <p className="text-lg md:text-xl text-gray-700 mb-6">
               We believe that meaningful connections are the foundation of
@@ -493,8 +618,8 @@ export default function CareersPage() {
               Our Key Values
             </h2>
             <p className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto">
-              These principles guide everything we do at Career Clutch and shape our
-              company culture
+              These principles guide everything we do at Career Clutch and shape
+              our company culture
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -744,8 +869,8 @@ export default function CareersPage() {
               Life at Career Clutch
             </h2>
             <p className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto">
-              Discover what makes working at Career Clutch a unique and rewarding
-              experience.
+              Discover what makes working at Career Clutch a unique and
+              rewarding experience.
             </p>
           </div>
 
@@ -826,21 +951,11 @@ export default function CareersPage() {
 
           <div className="bg-white rounded-3xl p-8 md:p-10 shadow-xl animate-on-scroll">
             <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center">
-              {/* <div className="relative w-24 h-24 md:w-32 md:h-32">
-                <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full"></div>
-                <Image
-                  src="/linq.png" // Replace with actual avatar
-                  alt="Testimonial Avatar"
-                  layout="fill"
-                  objectFit="cover"
-                  className="rounded-full relative z-10"
-                />
-              </div> */}
               <div>
                 <p className="text-lg md:text-xl text-gray-700 italic mb-4">
-                  "Joining Career Clutch has been a game-changer. The supportive culture
-                  and innovative projects have accelerated my growth beyond what
-                  I imagined."
+                  "Joining Career Clutch has been a game-changer. The supportive
+                  culture and innovative projects have accelerated my growth
+                  beyond what I imagined."
                 </p>
                 <div>
                   <h4 className="text-lg font-bold text-gray-900">
@@ -855,7 +970,7 @@ export default function CareersPage() {
           </div>
         </div>
       </section>
-      <Contact id="contact"/>
+      <Contact id="contact" />
       <footer className="bg-gray-900 text-white py-12 md:py-16 px-4 md:px-8">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
           <div>
@@ -900,7 +1015,7 @@ export default function CareersPage() {
                   <svg
                     className="w-6 h-6"
                     fill="currentColor"
-                    viewBox={social.viewBox || "0 0 24 24"} // Use custom viewBox if provided, else default to 24x24
+                    viewBox={social.viewBox || "0 0 24 24"}
                     xmlns="http://www.w3.org/2000/svg"
                   >
                     <path d={social.icon}></path>

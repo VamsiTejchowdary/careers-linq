@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation"; // Import useRouter for App Router
 import { 
   Mail, 
   Lock, 
@@ -17,20 +18,21 @@ const SignInPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [bubbles, setBubbles] = useState([]);
+  const router = useRouter(); // Use router for navigation
 
   // Generate animated background bubbles
   useEffect(() => {
     const generateBubbles = () => {
       const newBubbles = [];
-      const count = window.innerWidth < 768 ? 15 : 25; // fewer bubbles on mobile
+      const count = window.innerWidth < 768 ? 15 : 25;
       
       for (let i = 0; i < count; i++) {
         newBubbles.push({
           id: i,
-          x: Math.random() * 100, // position as percentage of viewport
+          x: Math.random() * 100,
           y: Math.random() * 100,
-          size: Math.random() * 12 + 4, // size between 4-16
-          duration: Math.random() * 20 + 10, // animation duration between 10-30s
+          size: Math.random() * 12 + 4,
+          duration: Math.random() * 20 + 10,
           delay: Math.random() * 5
         });
       }
@@ -48,19 +50,29 @@ const SignInPage = () => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
-    
-    // Simulate API request with timeout
+
     try {
-      // Here you would make your actual API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // For demo purposes, just log the credentials
-      console.log({ email, password });
-      
-      // Redirect to dashboard or homepage after successful login
-      window.location.href = "/applications";
+      const response = await fetch("/api/user-signin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Sign-in failed.");
+      }
+
+      // Store JWT token in localStorage
+      localStorage.setItem("token", result.token);
+
+      // Redirect to /careers
+      router.push("/careers");
     } catch (err) {
-      setError("Invalid email or password. Please try again.");
+      setError(err.message || "Invalid email or password. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -98,7 +110,6 @@ const SignInPage = () => {
       <header className="relative z-10 bg-indigo-900 bg-opacity-40 shadow-md backdrop-blur-sm border-b border-indigo-500/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Logo */}
             <Link href="/" className="flex items-center">
               <div className="h-10 w-10 relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-lg"></div>
@@ -110,8 +121,6 @@ const SignInPage = () => {
                 Career Clutch
               </span>
             </Link>
-
-            {/* Return to home link */}
             <Link
               href="/careers"
               className="text-indigo-200 hover:text-white flex items-center text-sm font-medium transition-colors"
@@ -243,7 +252,7 @@ const SignInPage = () => {
           <div className="text-center mt-8">
             <p className="text-indigo-200">
               Don't have an account?{" "}
-              <Link href="/signup" className="font-medium text-indigo-300 hover:text-white transition-colors">
+              <Link href="/user/signup" className="font-medium text-indigo-300 hover:text-white transition-colors">
                 Sign up
               </Link>
             </p>
@@ -251,7 +260,6 @@ const SignInPage = () => {
         </motion.div>
       </main>
 
-      {/* Footer */}
       <footer className="relative z-10 bg-indigo-900 bg-opacity-40 backdrop-blur-sm py-6 border-t border-indigo-500/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <p className="text-center text-indigo-200 text-sm">

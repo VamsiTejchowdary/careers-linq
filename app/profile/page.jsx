@@ -1,8 +1,8 @@
 "use client";
-import CareersPage from "../../components/careerspage";
+import ProfileComponent from "../../components/profilepage";
 import { useAuth } from "@/lib/auth";
 
-export default function Dashboard() {
+export default function ProfilePage() {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
@@ -17,5 +17,5 @@ export default function Dashboard() {
     return null; // Redirect happens in useAuth
   }
 
-  return <CareersPage />;
+  return <ProfileComponent />;
 }

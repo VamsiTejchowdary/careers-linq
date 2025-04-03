@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { 
   Mail, 
   Lock, 
@@ -38,6 +39,7 @@ const UserSignupPage = () => {
   const [error, setError] = useState("");
   const [resumeName, setResumeName] = useState("");
   const [bubbles, setBubbles] = useState([]);
+  const router = useRouter();
   
   const passwordStrengthLabels = ["Weak", "Medium", "Strong", "Very Strong"];
   const passwordStrengthColors = ["bg-red-500", "bg-yellow-500", "bg-green-500", "bg-green-600"];
@@ -149,7 +151,7 @@ const UserSignupPage = () => {
       }
   
       // Redirect to sign-in page on success
-      window.location.href = "/signin?registered=true";
+      router.push("/careers");
     } catch (err) {
       setError(err.message || "There was an error creating your account. Please try again.");
     } finally {
