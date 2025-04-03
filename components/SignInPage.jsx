@@ -107,7 +107,7 @@ const SignInPage = () => {
               </span>
             </Link>
             <Link
-              href="/careers"
+              href="/"
               className="text-indigo-200 hover:text-white flex items-center text-sm font-medium transition-colors"
             >
               Browse Careers

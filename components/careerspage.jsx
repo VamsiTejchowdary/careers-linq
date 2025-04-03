@@ -217,97 +217,202 @@ export default function CareersPage() {
               </div>
             </div>
             <div className="flex items-center">
-              {/* Profile/Sign-In Dropdown - IMPROVED */}
+              {/* Improved Profile/Sign-In Component */}
               <div className="relative">
-                <button
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="flex items-center text-gray-600 hover:text-gray-900 focus:outline-none"
-                  aria-expanded={isDropdownOpen}
-                  aria-haspopup="true"
-                >
-                  {isSignedIn ? (
-                    <div className="flex items-center">
-                      <span className="hidden sm:block mr-2 text-sm font-medium">
-                        {user?.firstName}
-                      </span>
-                      <div className="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center text-white">
-                        <svg
-                          className="h-6 w-6"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
-                        </svg>
-                      </div>
-                      <svg
-                        className="ml-1 h-4 w-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M19 9l-7 7-7-7"
+                {isSignedIn ? (
+                  <button
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-full bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    aria-expanded={isDropdownOpen}
+                    aria-haspopup="true"
+                  >
+                    <div className="h-8 w-8 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 flex items-center justify-center text-white overflow-hidden">
+                      {user?.profileImage ? (
+                        <img
+                          src={user.profileImage}
+                          alt={`${user.firstName}'s profile`}
+                          className="h-full w-full object-cover"
                         />
-                      </svg>
+                      ) : (
+                        <span className="text-sm font-semibold">
+                          {user?.firstName?.charAt(0)}
+                          {user?.lastName?.charAt(0)}
+                        </span>
+                      )}
                     </div>
-                  ) : (
-                    <div className="flex items-center">
-                      <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">
-                        <svg
-                          className="h-6 w-6"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
-                        </svg>
-                      </div>
-                      <span className="ml-1 text-sm font-medium">Sign In</span>
-                    </div>
-                  )}
-                </button>
+                    <span className="hidden sm:block text-sm font-medium text-gray-700">
+                      {user?.firstName}
+                    </span>
+                    <svg
+                      className="h-4 w-4 text-gray-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 hover:bg-indigo-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    aria-expanded={isDropdownOpen}
+                    aria-haspopup="true"
+                  >
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                    </svg>
+                    <span className="text-sm font-medium">Sign In</span>
+                  </button>
+                )}
 
-                {/* Dropdown Menu */}
+                {/* Improved Dropdown Menu */}
                 {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl py-2 z-50 ring-1 ring-black ring-opacity-5 focus:outline-none transform transition-all duration-200 ease-out">
                     {isSignedIn ? (
                       <>
+                        <div className="px-4 py-3 border-b border-gray-100">
+                          <p className="text-sm text-gray-500">Signed in as</p>
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {user?.email}
+                          </p>
+                        </div>
                         <Link
                           href="/profile"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-150"
                           onClick={() => setIsDropdownOpen(false)}
                         >
+                          <svg
+                            className="mr-3 h-5 w-5 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                            />
+                          </svg>
                           Profile
                         </Link>
+                        {/* <Link
+                          href="/settings"
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-150"
+                          onClick={() => setIsDropdownOpen(false)}
+                        >
+                          <svg
+                            className="mr-3 h-5 w-5 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
+                          </svg>
+                          Settings
+                        </Link> */}
+                        <div className="border-t border-gray-100 my-1"></div>
                         <button
                           onClick={() => {
                             handleLogout();
                             setIsDropdownOpen(false);
                           }}
-                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors duration-150"
                         >
+                          <svg
+                            className="mr-3 h-5 w-5 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                            />
+                          </svg>
                           Sign Out
                         </button>
                       </>
                     ) : (
-                      <Link
-                        href="/user/signin"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setIsDropdownOpen(false)}
-                      >
-                        Sign In
-                      </Link>
+                      <>
+                        <Link
+                          href="/user/signin"
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-150"
+                          onClick={() => setIsDropdownOpen(false)}
+                        >
+                          <svg
+                            className="mr-3 h-5 w-5 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                            />
+                          </svg>
+                          Sign In
+                        </Link>
+                        <Link
+                          href="/user/signup"
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-150"
+                          onClick={() => setIsDropdownOpen(false)}
+                        >
+                          <svg
+                            className="mr-3 h-5 w-5 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                            />
+                          </svg>
+                          Sign Up
+                        </Link>
+                      </>
                     )}
                   </div>
                 )}
               </div>
 
               {/* Mobile Menu Button */}
-              <div className="-mr-2 flex items-center md:hidden ml-4">
+              {/* <div className="-mr-2 flex items-center md:hidden ml-4">
                 <button
                   onClick={() => setIsNavOpen(!isNavOpen)}
                   className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none"
@@ -345,14 +450,18 @@ export default function CareersPage() {
                     />
                   </svg>
                 </button>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
 
-        {/* Mobile menu */}
-        <div className={`${isNavOpen ? "block" : "hidden"} md:hidden`}>
-          <div className="pt-2 pb-3 space-y-1">
+        {/* Improved Mobile menu */}
+        <div
+          className={`${
+            isNavOpen ? "block" : "hidden"
+          } md:hidden transform transition-all duration-300 ease-in-out`}
+        >
+          <div className="pt-2 pb-3 space-y-1 border-t border-gray-200">
             <Link
               href="/careers"
               className="block pl-3 pr-4 py-2 border-l-4 border-indigo-500 text-base font-medium text-indigo-700 bg-indigo-50"
@@ -374,31 +483,79 @@ export default function CareersPage() {
             </Link>
             {isSignedIn ? (
               <>
-                <Link
-                  href="/user/profile"
-                  className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800"
-                  onClick={() => setIsNavOpen(false)}
-                >
-                  Profile
-                </Link>
-                <button
-                  onClick={() => {
-                    handleLogout();
-                    setIsNavOpen(false);
-                  }}
-                  className="block w-full text-left pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800"
-                >
-                  Sign Out
-                </button>
-              </>
-            ) : (
-              <Link
-                href="/user/signin"
+                <div className="border-t border-gray-200 pt-4">
+                  <div className="flex items-center px-4">
+                    <div className="flex-shrink-0">
+                      <div className="h-10 w-10 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 flex items-center justify-center text-white overflow-hidden">
+                        {user?.profileImage ? (
+                          <img
+                            src={user.profileImage}
+                            alt={`${user.firstName}'s profile`}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-sm font-semibold">
+                            {user?.firstName?.charAt(0)}
+                            {user?.lastName?.charAt(0)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="ml-3">
+                      <div className="text-base font-medium text-gray-800">
+                        {user?.firstName} {user?.lastName}
+                      </div>
+                      <div className="text-sm font-medium text-gray-500">
+                        {user?.email}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-3 space-y-1">
+                    <Link
+                      href="/user/profile"
+                      className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800"
+                      onClick={() => setIsNavOpen(false)}
+                    >
+                      Profile
+                    </Link>
+                    {/* <Link
+                href="/user/settings"
                 className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800"
                 onClick={() => setIsNavOpen(false)}
               >
-                Sign In
-              </Link>
+                Settings
+              </Link> */}
+                    <button
+                      onClick={() => {
+                        handleLogout();
+                        setIsNavOpen(false);
+                      }}
+                      className="block w-full text-left pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-red-300 hover:text-red-700"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="border-t border-gray-200 pt-4 pb-3">
+                <div className="flex flex-col space-y-2 px-2">
+                  <Link
+                    href="/user/signin"
+                    className="flex items-center justify-center px-4 py-2 rounded-md text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                    onClick={() => setIsNavOpen(false)}
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/user/signup"
+                    className="flex items-center justify-center px-4 py-2 rounded-md text-base font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100"
+                    onClick={() => setIsNavOpen(false)}
+                  >
+                    Create Account
+                  </Link>
+                </div>
+              </div>
             )}
           </div>
         </div>
