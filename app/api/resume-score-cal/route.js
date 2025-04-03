@@ -13,6 +13,7 @@ export const config = {
 export async function POST(req) {
   try {
     await connectMongoDB();
+    console.log("Connected to MongoDB");
 
     const fields = {};
     const files = {};
@@ -33,9 +34,8 @@ export async function POST(req) {
         file.on("data", (data) => chunks.push(data));
         file.on("end", () => {
           const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-          const fileExt = filename.filename.match(/\.[^.]+$/);
-          const extension = fileExt ? fileExt[0] : "";
-          const newFilename = `${fieldname}-${uniqueSuffix}${extension}`;
+          const fileExt = filename.filename?.match(/\.[^.]+$/)?.[0] || ".pdf";
+          const newFilename = `${fieldname}-${uniqueSuffix}${fileExt}`;
           files[fieldname] = {
             filename: newFilename,
             buffer: Buffer.concat(chunks),
@@ -48,7 +48,7 @@ export async function POST(req) {
       busboy.end(body);
     });
 
-    const { jobId } = fields;
+    const { jobId, resumeUrl } = fields;
 
     if (!jobId) {
       return NextResponse.json({ message: "Job ID is required." }, { status: 400 });
@@ -60,34 +60,48 @@ export async function POST(req) {
     }
 
     const jobDescription = `
-      ${job.about || ""} 
-      ${(job.responsibilities || []).join(" ")} 
+      ${job.about || ""}
+      ${(job.responsibilities || []).join(" ")}
       ${(job.niceToHaves || []).join(" ")}
     `.trim();
+    console.log("Job description length:", jobDescription.length);
 
-    if (!files.resume) {
+    let resumeBuffer;
+    let resumeFilename;
+
+    if (files.resume) {
+      resumeBuffer = files.resume.buffer;
+      resumeFilename = files.resume.filename;
+      console.log("Resume file uploaded:", resumeFilename, "Size:", resumeBuffer.length);
+    } else if (resumeUrl) {
+      console.log("Fetching resume from URL:", resumeUrl);
+      const resumeResponse = await fetch(resumeUrl);
+      if (!resumeResponse.ok) {
+        throw new Error(`Failed to fetch resume from URL: ${resumeResponse.statusText}`);
+      }
+      resumeBuffer = Buffer.from(await resumeResponse.arrayBuffer());
+      resumeFilename = resumeUrl.split("/").pop() || "resume.pdf";
+      console.log("Resume fetched, size:", resumeBuffer.length);
+    } else {
       return NextResponse.json({ message: "Resume is required." }, { status: 400 });
     }
 
-    const resumeFile = files.resume;
-    console.log("Resume file mimetype:", resumeFile.mimetype);
-    console.log("Resume filename:", resumeFile.filename);
-    console.log("Buffer length:", resumeFile.buffer.length);
-
     let resumeText = "";
-    const isPdf = resumeFile.filename?.toLowerCase().endsWith(".pdf");
+    const isPdf = resumeFilename.toLowerCase().endsWith(".pdf");
 
     if (isPdf) {
       console.log("Extracting text from PDF using Cloudmersive API");
       try {
-        resumeText = await extractTextFromPdf(resumeFile.buffer);
+        resumeText = await extractTextFromPdf(resumeBuffer);
         console.log("Extracted PDF text length:", resumeText.length);
+        console.log("Extracted text preview:", resumeText.substring(0, 100)); // Log first 100 chars
       } catch (pdfError) {
         console.error("PDF parsing error:", pdfError);
         return NextResponse.json({ message: "Failed to extract resume text." }, { status: 500 });
       }
     } else {
       resumeText = "Non-PDF resume uploaded";
+      console.log("Non-PDF resume detected, using placeholder text");
     }
 
     let similarityScore = 0;
@@ -95,6 +109,8 @@ export async function POST(req) {
       console.log("Calculating similarity between job description and resume");
       similarityScore = calculateSimilarity(jobDescription, resumeText);
       console.log("Final similarity score:", similarityScore);
+    } else {
+      console.log("No valid resume text extracted, similarity score remains 0");
     }
 
     return NextResponse.json(
@@ -110,12 +126,13 @@ export async function POST(req) {
   }
 }
 
-// Extract text from PDFs using Cloudmersive Convert API
 async function extractTextFromPdf(pdfBuffer) {
   try {
     console.log("Sending PDF to Cloudmersive API, buffer size:", pdfBuffer.length);
 
     const apiKey = process.env.CLOUDMERSIVE_API_KEY;
+    if (!apiKey) throw new Error("CLOUDMERSIVE_API_KEY is not set.");
+
     const url = "https://api.cloudmersive.com/convert/pdf/to/txt";
 
     const response = await fetch(url, {
@@ -128,12 +145,13 @@ async function extractTextFromPdf(pdfBuffer) {
     });
 
     if (!response.ok) {
-      throw new Error(`Cloudmersive API error: ${response.status} - ${response.statusText}`);
+      const errorText = await response.text();
+      throw new Error(`Cloudmersive API error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
     const extractedText = data.TextResult || "";
-    console.log("PDF processed, pages not provided by API, text length:", extractedText.length);
+    console.log("PDF processed, text length:", extractedText.length);
     return extractedText;
   } catch (error) {
     console.error("Error extracting text from PDF with Cloudmersive:", error);
@@ -141,7 +159,6 @@ async function extractTextFromPdf(pdfBuffer) {
   }
 }
 
-// Jaccard Similarity
 function calculateSimilarity(jobDescription, resumeText) {
   const jobWords = new Set(jobDescription.toLowerCase().split(/\s+/).filter(Boolean));
   const resumeWords = new Set(resumeText.toLowerCase().split(/\s+/).filter(Boolean));
@@ -150,5 +167,5 @@ function calculateSimilarity(jobDescription, resumeText) {
   const union = new Set([...jobWords, ...resumeWords]);
 
   const similarity = intersection.size / union.size;
-  return Math.round(4 * similarity * 100);
+  return Math.round(similarity * 100);
 }

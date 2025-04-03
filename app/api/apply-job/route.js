@@ -5,7 +5,6 @@ import { NextResponse } from "next/server";
 import { put } from "@vercel/blob";
 import Busboy from "busboy";
 
-
 export const config = {
   api: {
     bodyParser: false,
@@ -21,7 +20,7 @@ export async function POST(req) {
     const contentType = req.headers.get("content-type");
 
     if (!contentType || !contentType.includes("multipart/form-data")) {
-      throw new Error("Expected multipart/form-data.");
+      return NextResponse.json({ message: "Expected multipart/form-data." }, { status: 400 });
     }
 
     const busboy = Busboy({ headers: { "content-type": contentType } });
@@ -30,18 +29,19 @@ export async function POST(req) {
 
     await new Promise((resolve, reject) => {
       busboy.on("field", (name, value) => (fields[name] = value));
-      busboy.on("file", (fieldname, file, filename, encoding, mimetype) => {
+      busboy.on("file", (fieldname, file, info) => {
+        const { filename, mimeType } = info;
         const chunks = [];
         file.on("data", (data) => chunks.push(data));
         file.on("end", () => {
           const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-          const fileExt = filename.filename.match(/\.[^.]+$/);
+          const fileExt = filename.match(/\.[^.]+$/);
           const extension = fileExt ? fileExt[0] : "";
           const newFilename = `${fieldname}-${uniqueSuffix}${extension}`;
           files[fieldname] = {
             filename: newFilename,
             buffer: Buffer.concat(chunks),
-            mimetype,
+            mimetype: mimeType,
           };
         });
       });
@@ -50,36 +50,36 @@ export async function POST(req) {
       busboy.end(body);
     });
 
-    const { name, email, phone, linkedin, coverLetter, jobId, similarityScore } = fields;
+    const { name, email, phone, linkedin, coverLetter, jobId, similarityScore, resumeUrl } = fields;
 
     const job = await Job.findById(jobId);
     if (!job) {
       return NextResponse.json({ message: "Job not found." }, { status: 404 });
     }
-    
+
     if (email) {
-      const emailExsist = await JobApplication.findOne({ jobId: jobId, email: email });
-      if (emailExsist) {
-        return NextResponse.json({ message: "You Have already applied for this position." }, { status: 404 });
+      const emailExists = await JobApplication.findOne({ jobId, email });
+      if (emailExists) {
+        return NextResponse.json({ message: "You have already applied for this position." }, { status: 409 });
       }
     }
 
-    if (!files.resume) {
-      return NextResponse.json({ message: "Resume is required." }, { status: 400 });
+    let finalResumeUrl = resumeUrl; // Use provided URL if no new file is uploaded
+    if (files.resume) {
+      const resumeFile = files.resume;
+      console.log("Uploading new resume:", resumeFile.filename);
+      const blob = await put(resumeFile.filename, resumeFile.buffer, {
+        access: "public",
+        contentType: resumeFile.mimetype,
+        token: process.env.BLOB_READ_WRITE_TOKEN,
+      });
+      finalResumeUrl = blob.url;
     }
 
-    const resumeFile = files.resume;
-    console.log("Resume file mimetype:", resumeFile.mimetype);
-    console.log("Resume filename:", resumeFile.filename);
-    console.log("Buffer length:", resumeFile.buffer.length);
-
-    const blob = await put(resumeFile.filename, resumeFile.buffer, {
-      access: "public",
-      contentType: resumeFile.mimetype,
-      token: process.env.BLOB_READ_WRITE_TOKEN,
-    });
-
-    const resumeUrl = blob.url;
+    if (!finalResumeUrl) {
+      console.log("No resume provided or uploaded.");
+      return NextResponse.json({ message: "Resume is required." }, { status: 400 });
+    }
 
     const jobApplication = await JobApplication.create({
       name,
@@ -87,7 +87,7 @@ export async function POST(req) {
       phone,
       linkedin,
       coverLetter,
-      resume: resumeUrl,
+      resume: finalResumeUrl,
       jobId,
       similarityScore,
     });
