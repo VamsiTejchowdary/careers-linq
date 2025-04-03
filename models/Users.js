@@ -67,8 +67,7 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-// Add index for email field for faster queries
-userSchema.index({ email: 1 });
+
 
 const Users = models.Users || mongoose.model("Users", userSchema);
 export default Users;
