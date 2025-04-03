@@ -24,10 +24,9 @@ export async function POST(req) {
       return NextResponse.json({ message: "Invalid email or password." }, { status: 401 });
     }
 
-    // Convert user._id to string explicitly
     const token = await new SignJWT({ userId: user._id.toString(), email: user.email })
       .setProtectedHeader({ alg: "HS256" })
-      .setExpirationTime("1minutes")
+      .setExpirationTime("1h") // Changed to 1 hour
       .sign(new TextEncoder().encode(process.env.JWT_SECRET));
 
     const response = NextResponse.json(
@@ -40,7 +39,7 @@ export async function POST(req) {
     response.cookies.set("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 3600,
+      maxAge: 3600, // 1 hour in seconds
       path: "/",
     });
 

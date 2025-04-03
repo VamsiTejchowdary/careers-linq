@@ -2,15 +2,8 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useRouter } from "next/navigation"; // Import useRouter for App Router
-import { 
-  Mail, 
-  Lock, 
-  User, 
-  Building2, 
-  ArrowRight, 
-  Loader2 
-} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Mail, Lock, User, Building2, ArrowRight, Loader2 } from "lucide-react";
 
 const SignInPage = () => {
   const [email, setEmail] = useState("");
@@ -18,14 +11,12 @@ const SignInPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [bubbles, setBubbles] = useState([]);
-  const router = useRouter(); // Use router for navigation
+  const router = useRouter();
 
-  // Generate animated background bubbles
   useEffect(() => {
     const generateBubbles = () => {
       const newBubbles = [];
       const count = window.innerWidth < 768 ? 15 : 25;
-      
       for (let i = 0; i < count; i++) {
         newBubbles.push({
           id: i,
@@ -33,17 +24,14 @@ const SignInPage = () => {
           y: Math.random() * 100,
           size: Math.random() * 12 + 4,
           duration: Math.random() * 20 + 10,
-          delay: Math.random() * 5
+          delay: Math.random() * 5,
         });
       }
-      
       setBubbles(newBubbles);
     };
-    
     generateBubbles();
-    window.addEventListener('resize', generateBubbles);
-    
-    return () => window.removeEventListener('resize', generateBubbles);
+    window.addEventListener("resize", generateBubbles);
+    return () => window.removeEventListener("resize", generateBubbles);
   }, []);
 
   const handleSubmit = async (e) => {
@@ -66,10 +54,6 @@ const SignInPage = () => {
         throw new Error(result.message || "Sign-in failed.");
       }
 
-      // Store JWT token in localStorage
-      localStorage.setItem("token", result.token);
-
-      // Redirect to /careers
       router.push("/careers");
     } catch (err) {
       setError(err.message || "Invalid email or password. Please try again.");
