@@ -113,21 +113,45 @@ const UserSignupPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    
+  
     if (formData.password !== formData.confirmPassword) {
       setPasswordMatch(false);
       setError("Passwords do not match");
       return;
     }
-    
+  
     setIsLoading(true);
-    
+  
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      console.log(formData);
+      // Create FormData object to handle multipart/form-data
+      const formDataToSend = new FormData();
+      formDataToSend.append("firstName", formData.firstName);
+      formDataToSend.append("lastName", formData.lastName);
+      formDataToSend.append("email", formData.email);
+      formDataToSend.append("phone", formData.phone);
+      formDataToSend.append("country", formData.country);
+      formDataToSend.append("linkedin", formData.linkedin);
+      formDataToSend.append("portfolio", formData.portfolio);
+      formDataToSend.append("password", formData.password);
+      formDataToSend.append("confirmPassword", formData.confirmPassword);
+      formDataToSend.append("resume", formData.resume); // File object from input
+  
+      // Send the request to the API
+      const response = await fetch("/api/user-signup", {
+        method: "POST",
+        body: formDataToSend,
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to create account");
+      }
+  
+      // Redirect to sign-in page on success
       window.location.href = "/signin?registered=true";
     } catch (err) {
-      setError("There was an error creating your account. Please try again.");
+      setError(err.message || "There was an error creating your account. Please try again.");
     } finally {
       setIsLoading(false);
     }
