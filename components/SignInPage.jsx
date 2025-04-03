@@ -54,9 +54,8 @@ const SignInPage = () => {
         throw new Error(result.message || "Sign-in failed.");
       }
 
-      console.log("Sign-in successful");
-      router.replace("/careers");
-      console.log("recahed here.");
+    console.log("Sign-in successful, redirecting with window.location...");
+    window.location.href = "/careers";
     } catch (err) {
       setError(err.message || "Invalid email or password. Please try again.");
     } finally {
