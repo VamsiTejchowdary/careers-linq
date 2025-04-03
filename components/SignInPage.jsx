@@ -54,7 +54,9 @@ const SignInPage = () => {
         throw new Error(result.message || "Sign-in failed.");
       }
 
-      router.push("/careers");
+      console.log("Sign-in successful");
+      router.replace("/careers");
+      console.log("recahed here.");
     } catch (err) {
       setError(err.message || "Invalid email or password. Please try again.");
     } finally {
