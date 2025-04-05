@@ -658,11 +658,7 @@ export default function JobDetailPage() {
               transition={{ duration: 0.3 }}
               className="text-center py-12 bg-gray-50 rounded-lg border border-gray-100"
             >
-              <img 
-                src="/api/placeholder/120/120" 
-                alt="Sign in" 
-                className="mx-auto mb-6 rounded-full bg-white p-4 shadow-sm"
-              />
+              
               <p className="text-gray-600 mb-6 max-w-md mx-auto">
                 Please sign in to your account to apply for this position and track your application status.
               </p>
