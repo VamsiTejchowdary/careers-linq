@@ -10,7 +10,7 @@ import {
   AlertCircle,
   FileSearch,
   Upload,
-  FileText,
+  FileText, Loader, 
 } from "lucide-react";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
@@ -632,253 +632,309 @@ export default function JobDetailPage() {
                 {user ? "Apply for This Position" : "Sign In to Apply"}
               </h2>
 
-              <div className="max-w-2xl mx-auto">
-                <AnimatePresence mode="wait">
-                  {!user ? (
-                    <motion.div
-                      key="signin"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      transition={{ duration: 0.3 }}
-                      className="text-center py-6"
-                    >
-                      <p className="text-gray-600 mb-4">
-                        Please sign in to apply for this position.
-                      </p>
-                      <Link
-                        href="/user/signin"
-                        className="px-6 py-3 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition-all inline-block"
-                      >
-                        Sign In
-                      </Link>
-                    </motion.div>
-                  ) : !isSubmitted ? (
-                    <motion.div
-                      key="form"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <form onSubmit={handleSubmit} className="space-y-5">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Your Resume *
-                          </label>
-                          <div className="space-y-2">
-                            {user.resume && (
-                              <div className="flex items-center justify-between p-2 bg-indigo-50 rounded-md">
-                                <span className="text-indigo-700 truncate">
-                                  {formData.resume?.name ||
-                                    formData.resume?.split("/").pop() ||
-                                    "Current Resume"}
-                                </span>
-                                <a
-                                  href={formData.resume}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-indigo-600 hover:text-indigo-800"
-                                >
-                                  <FileText size={20} />
-                                </a>
-                              </div>
-                            )}
-                            <button
-                              type="button"
-                              onClick={triggerFileInput}
-                              className="w-full px-4 py-2 bg-indigo-50 text-indigo-700 font-medium rounded-md hover:bg-indigo-100 transition-all flex items-center justify-center"
-                            >
-                              <Upload className="h-4 w-4 mr-2" />{" "}
-                              {user.resume ? "Update Resume" : "Upload Resume"}
-                            </button>
-                            <input
-                              type="file"
-                              ref={fileInputRef}
-                              accept=".pdf,.doc,.docx"
-                              onChange={handleFileChange}
-                              className="hidden"
-                            />
-                            {formData.resume && (
-                              <motion.button
-                                type="button"
-                                onClick={handleCheckScore}
-                                disabled={isCheckingScore}
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                className="w-full p-2 bg-indigo-100 text-indigo-600 rounded-md hover:bg-indigo-200 transition-all disabled:bg-indigo-50 disabled:text-indigo-300 flex items-center justify-center"
-                              >
-                                {isCheckingScore ? (
-                                  <svg
-                                    className="animate-spin h-5 w-5 mr-2"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <circle
-                                      className="opacity-25"
-                                      cx="12"
-                                      cy="12"
-                                      r="10"
-                                      stroke="currentColor"
-                                      strokeWidth="4"
-                                    />
-                                    <path
-                                      className="opacity-75"
-                                      fill="currentColor"
-                                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                    />
-                                  </svg>
-                                ) : (
-                                  <FileSearch size={20} className="mr-2" />
-                                )}
-                                Check Resume Match
-                              </motion.button>
-                            )}
-                            {similarityScore !== null && !isCheckingScore && (
-                              <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="flex items-center space-x-2 mt-2"
-                              >
-                                {similarityScore >= 70 ? (
-                                  <CheckCircle
-                                    size={24}
-                                    className="text-green-500"
-                                  />
-                                ) : (
-                                  <AlertCircle
-                                    size={24}
-                                    className="text-yellow-500"
-                                  />
-                                )}
-                                <span
-                                  className={`font-semibold ${
-                                    similarityScore >= 70
-                                      ? "text-green-600"
-                                      : "text-yellow-600"
-                                  }`}
-                                >
-                                  There is an {similarityScore}% match
-                                </span>
-                              </motion.div>
-                            )}
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Cover Letter (Optional)
-                          </label>
-                          <motion.textarea
-                            whileFocus={{ scale: 1.01 }}
-                            name="coverLetter"
-                            rows="4"
-                            value={formData.coverLetter}
-                            onChange={handleInputChange}
-                            className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            placeholder="Tell us why you're interested in this position..."
-                          />
-                        </div>
-
-                        <motion.button
-                          type="submit"
-                          disabled={isLoading}
-                          className="w-full px-6 py-3 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition-all disabled:bg-indigo-400 disabled:cursor-not-allowed"
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
+              <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+      {/* For demo purposes - remove in production */}
+      {/* <div className="bg-gray-50 px-6 py-3 flex justify-end">
+        <button 
+          onClick={toggleUser} 
+          className="text-sm text-gray-500 hover:text-gray-700"
+        >
+          {user ? 'Demo: Log Out' : 'Demo: Log In'}
+        </button>
+      </div> */}
+      
+      <div className="px-8 py-10">
+        <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+          Job Application
+        </h1>
+        
+        <AnimatePresence mode="wait">
+          {!user ? (
+            <motion.div
+              key="signin"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="text-center py-12 bg-gray-50 rounded-lg border border-gray-100"
+            >
+              <img 
+                src="/api/placeholder/120/120" 
+                alt="Sign in" 
+                className="mx-auto mb-6 rounded-full bg-white p-4 shadow-sm"
+              />
+              <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                Please sign in to your account to apply for this position and track your application status.
+              </p>
+              <Link
+                href="/user/signin"
+                className="px-8 py-3 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition-all inline-flex items-center gap-2 shadow-md hover:shadow-lg"
+              >
+                Sign In to Continue
+              </Link>
+            </motion.div>
+          ) : !isSubmitted ? (
+            <motion.div
+              key="form"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="bg-gray-50 p-6 rounded-lg border border-gray-100">
+                  <label className="block text-base font-medium text-gray-700 mb-3 flex items-center">
+                    <FileText className="h-5 w-5 mr-2 text-indigo-600" />
+                    Your Resume *
+                  </label>
+                  <div className="space-y-3">
+                    {user.resume && (
+                      <div className="flex items-center justify-between p-3 bg-indigo-50 rounded-md border border-indigo-100">
+                        <span className="text-indigo-700 truncate font-medium">
+                          {formData.resume?.name ||
+                            formData.resume?.split("/").pop() ||
+                            "Current Resume"}
+                        </span>
+                        <a
+                          href={formData.resume}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-indigo-600 hover:text-indigo-800 p-2 rounded-full hover:bg-indigo-100 transition-all"
                         >
-                          {isLoading ? (
-                            <span className="flex items-center justify-center">
-                              <svg
-                                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                              >
-                                <circle
-                                  className="opacity-25"
-                                  cx="12"
-                                  cy="12"
-                                  r="10"
-                                  stroke="currentColor"
-                                  strokeWidth="4"
-                                />
-                                <path
-                                  className="opacity-75"
-                                  fill="currentColor"
-                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                />
-                              </svg>
-                              Submitting...
-                            </span>
+                          <FileText size={20} />
+                        </a>
+                      </div>
+                    )}
+                    
+                    <div className="flex gap-3">
+                      <button
+                        type="button"
+                        onClick={triggerFileInput}
+                        className="flex-1 px-4 py-3 bg-white text-indigo-700 font-medium rounded-md border border-indigo-200 hover:bg-indigo-50 transition-all flex items-center justify-center shadow-sm"
+                      >
+                        <Upload className="h-4 w-4 mr-2" />{" "}
+                        {user.resume ? "Update Resume" : "Upload Resume"}
+                      </button>
+                      
+                      {formData.resume && (
+                        <button
+                          type="button"
+                          onClick={handleCheckScore}
+                          disabled={isCheckingScore}
+                          className="p-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-400 focus:ring-offset-1 transition-all disabled:bg-indigo-400 shadow-sm"
+                          title="Check Resume Match"
+                          aria-label="Check Resume Match"
+                        >
+                          {isCheckingScore ? (
+                            <Loader className="h-5 w-5 animate-spin" />
                           ) : (
-                            "Submit Application"
+                            <FileSearch size={20} />
                           )}
-                        </motion.button>
-                      </form>
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="success"
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{
-                        duration: 0.5,
-                        type: "spring",
-                        stiffness: 100,
-                      }}
-                      className="text-center py-12"
-                    >
-                      <motion.div
-                        initial={{ scale: 0.5, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.2, duration: 0.5 }}
-                      >
-                        <CheckCircle
-                          size={80}
-                          className="text-green-500 mx-auto"
-                        />
-                      </motion.div>
-                      <motion.h2
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.4, duration: 0.5 }}
-                        className="mt-6 text-2xl font-bold text-gray-800"
-                      >
-                        Application Submitted!
-                      </motion.h2>
-                      {similarityScore !== null && (
-                        <motion.p
-                          initial={{ y: 20, opacity: 0 }}
-                          animate={{ y: 0, opacity: 1 }}
-                          transition={{ delay: 0.3, duration: 0.5 }}
-                          className="text-lg text-gray-600 mb-2"
-                        >
-                          Resume Match Score: {similarityScore}/100
-                        </motion.p>
+                        </button>
                       )}
-                      <motion.p
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.6, duration: 0.5 }}
-                        className="mt-4 text-lg text-gray-600"
+                    </div>
+                    
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      accept=".pdf,.doc,.docx"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
+                    
+                    {similarityScore !== null && !isCheckingScore && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex items-center p-3 mt-2 rounded-md"
+                        style={{
+                          backgroundColor: similarityScore >= 70 ? 'rgba(220, 252, 231, 0.7)' : 'rgba(254, 249, 195, 0.7)',
+                          border: `1px solid ${similarityScore >= 70 ? '#86efac' : '#fef08a'}`
+                        }}
                       >
-                        We’ll connect with you soon. Thank you for applying!
-                      </motion.p>
-                      <motion.button
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.8, duration: 0.5 }}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => setIsSubmitted(false)}
-                        className="mt-8 px-6 py-2 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition-all"
+                        {similarityScore >= 70 ? (
+                          <CheckCircle
+                            size={24}
+                            className="text-green-600 mr-3 flex-shrink-0"
+                          />
+                        ) : (
+                          <AlertCircle
+                            size={24}
+                            className="text-yellow-600 mr-3 flex-shrink-0"
+                          />
+                        )}
+                        <div>
+                          <span
+                            className={`font-semibold block ${
+                              similarityScore >= 70
+                                ? "text-green-700"
+                                : "text-yellow-700"
+                            }`}
+                          >
+                            {similarityScore}% Match with Job Requirements
+                          </span>
+                          <span className="text-sm text-gray-600">
+                            {similarityScore >= 70 
+                              ? "Your resume appears to be a good match for this position!" 
+                              : "Consider customizing your resume to highlight relevant skills."}
+                          </span>
+                        </div>
+                      </motion.div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 p-6 rounded-lg border border-gray-100">
+                  <label className="block text-base font-medium text-gray-700 mb-3 flex items-center">
+                    <svg 
+                      className="h-5 w-5 mr-2 text-indigo-600" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Cover Letter (Optional)
+                  </label>
+                  <motion.textarea
+                    whileFocus={{ scale: 1.01 }}
+                    name="coverLetter"
+                    rows="5"
+                    value={formData.coverLetter}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white shadow-sm"
+                    placeholder="Explain why you're interested in this position and how your skills align with the requirements..."
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    Pro tip: Personalize your cover letter to highlight relevant experience and show your interest in the role.
+                  </p>
+                </div>
+
+                <motion.button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full px-6 py-4 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition-all disabled:bg-indigo-400 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {isLoading ? (
+                    <span className="flex items-center justify-center">
+                      <svg
+                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
                       >
-                        Apply to Another Job
-                      </motion.button>
-                    </motion.div>
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
+                      </svg>
+                      Submitting Application...
+                    </span>
+                  ) : (
+                    "Submit Application"
                   )}
-                </AnimatePresence>
+                </motion.button>
+              </form>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="success"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{
+                duration: 0.5,
+                type: "spring",
+                stiffness: 100,
+              }}
+              className="text-center py-12 px-6 bg-gray-50 rounded-lg border border-gray-100"
+            >
+              <motion.div
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+                className="bg-green-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-2"
+              >
+                <CheckCircle
+                  size={60}
+                  className="text-green-600"
+                />
+              </motion.div>
+              <motion.h2
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+                className="mt-6 text-2xl font-bold text-gray-800"
+              >
+                Application Successfully Submitted!
+              </motion.h2>
+              
+              {similarityScore !== null && (
+                <motion.div
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.5, duration: 0.5 }}
+                  className="mt-4 inline-block px-4 py-2 rounded-full bg-white border"
+                >
+                  <div className="flex items-center">
+                    <span className="font-medium text-gray-700 mr-1">Resume Match Score:</span>
+                    <span className={`font-bold ${similarityScore >= 80 ? 'text-green-600' : similarityScore >= 70 ? 'text-blue-600' : 'text-yellow-600'}`}>
+                      {similarityScore}/100
+                    </span>
+                  </div>
+                </motion.div>
+              )}
+              
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.6, duration: 0.5 }}
+                className="mt-6 p-4 bg-white rounded-md border border-gray-100 max-w-md mx-auto"
+              >
+                <p className="text-gray-600">
+                  We'll review your application and connect with you soon. Thank you for your interest!
+                </p>
+              </motion.div>
+              
+              <div className="mt-8 flex gap-4 justify-center">
+                <motion.button
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.8, duration: 0.5 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setIsSubmitted(false)}
+                  className="px-6 py-3 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition-all shadow-md"
+                >
+                  Apply to Another Job
+                </motion.button>
+                
+                <motion.a
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.9, duration: 0.5 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  href="/dashboard"
+                  className="px-6 py-3 bg-white text-indigo-600 font-medium rounded-md border border-indigo-200 hover:bg-indigo-50 transition-all shadow-sm"
+                >
+                  View Dashboard
+                </motion.a>
               </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
             </div>
           </div>
         </div>

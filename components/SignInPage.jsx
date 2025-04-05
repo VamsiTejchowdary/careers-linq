@@ -3,7 +3,18 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Mail, Lock, User, Building2, ArrowRight, Loader2 } from "lucide-react";
+import { ToastContainer, toast } from "react-toastify";
+import {
+  Mail,
+  Lock,
+  User,
+  Building2,
+  ArrowRight,
+  Loader2,
+  Eye,
+  EyeOff,
+} from "lucide-react";
+import { set } from "mongoose";
 
 const SignInPage = () => {
   const [email, setEmail] = useState("");
@@ -12,6 +23,11 @@ const SignInPage = () => {
   const [error, setError] = useState("");
   const [bubbles, setBubbles] = useState([]);
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   useEffect(() => {
     const generateBubbles = () => {
@@ -53,10 +69,12 @@ const SignInPage = () => {
       if (!response.ok) {
         throw new Error(result.message || "Sign-in failed.");
       }
-
-    console.log("Sign-in successful, redirecting with window.location...");
-    window.location.href = "/careers";
+      toast.success("Sign-in successful!");
+      setTimeout(() => {
+        window.location.href = "/careers";
+      }, 2000);
     } catch (err) {
+      toast.error(err.message || "Sign-in failed.");
       setError(err.message || "Invalid email or password. Please try again.");
     } finally {
       setIsLoading(false);
@@ -67,6 +85,18 @@ const SignInPage = () => {
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800">
       {/* Animated background bubbles */}
       <div className="absolute inset-0 w-full h-full">
+        <ToastContainer 
+                      position="top-center" 
+                      autoClose={2000}
+                      hideProgressBar={false}
+                      newestOnTop
+                      closeOnClick
+                      rtl={false}
+                      pauseOnFocusLoss
+                      draggable
+                      pauseOnHover
+                      theme="light"
+                    />
         {bubbles.map((bubble) => (
           <motion.div
             key={bubble.id}
@@ -90,7 +120,7 @@ const SignInPage = () => {
           />
         ))}
       </div>
-      
+
       {/* Header */}
       <header className="relative z-10 bg-indigo-900 bg-opacity-40 shadow-md backdrop-blur-sm border-b border-indigo-500/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -126,19 +156,18 @@ const SignInPage = () => {
         >
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-white">Welcome Back</h1>
-            <p className="text-indigo-200 mt-2">Sign in to your Career Clutch account</p>
+            <p className="text-indigo-200 mt-2">
+              Sign in to your Career Clutch account
+            </p>
           </div>
-
-          {error && (
-            <div className="mb-6 p-4 bg-red-900/30 border-l-4 border-red-500 text-red-100 backdrop-blur-sm rounded-r">
-              <p>{error}</p>
-            </div>
-          )}
 
           <form onSubmit={handleSubmit}>
             <div className="space-y-6">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-indigo-200 mb-1">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-indigo-200 mb-1"
+                >
                   Email Address
                 </label>
                 <div className="relative">
@@ -159,7 +188,10 @@ const SignInPage = () => {
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-indigo-200 mb-1">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-indigo-200 mb-1"
+                >
                   Password
                 </label>
                 <div className="relative">
@@ -169,13 +201,27 @@ const SignInPage = () => {
                   <input
                     id="password"
                     name="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="block w-full pl-10 pr-3 py-3 bg-indigo-800/30 border border-indigo-500/50 rounded-lg focus:ring-indigo-400 focus:border-indigo-400 text-white placeholder-indigo-300"
+                    className="block w-full pl-10 pr-10 py-3 bg-indigo-800/30 border border-indigo-500/50 rounded-lg focus:ring-indigo-400 focus:border-indigo-400 text-white placeholder-indigo-300"
                   />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-indigo-300 hover:text-indigo-100 focus:outline-none transition-colors"
+                    onClick={togglePasswordVisibility}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
                 </div>
               </div>
 
@@ -187,14 +233,25 @@ const SignInPage = () => {
                     type="checkbox"
                     className="h-4 w-4 text-indigo-500 border-indigo-400 rounded focus:ring-indigo-400"
                   />
-                  <label htmlFor="remember-me" className="ml-2 block text-sm text-indigo-200">
+                  <label
+                    htmlFor="remember-me"
+                    className="ml-2 block text-sm text-indigo-200"
+                  >
                     Remember me
                   </label>
                 </div>
-                <a href="#" className="text-sm font-medium text-indigo-300 hover:text-white transition-colors">
+                <a
+                  href="#"
+                  className="text-sm font-medium text-indigo-300 hover:text-white transition-colors"
+                >
                   Forgot password?
                 </a>
               </div>
+              {error && (
+            <div className="mb-6 p-4 bg-red-900/30 border-l-4 border-red-500 text-red-100 backdrop-blur-sm rounded-r">
+              <p>{error}</p>
+            </div>
+          )}
 
               <button
                 type="submit"
@@ -219,7 +276,9 @@ const SignInPage = () => {
                 <div className="w-full border-t border-indigo-500/30"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-indigo-900/20 text-indigo-200">Or sign in as</span>
+                <span className="px-4 bg-indigo-900/20 text-indigo-200">
+                  Or sign in as
+                </span>
               </div>
             </div>
 
@@ -237,7 +296,10 @@ const SignInPage = () => {
           <div className="text-center mt-8">
             <p className="text-indigo-200">
               Don't have an account?{" "}
-              <Link href="/user/signup" className="font-medium text-indigo-300 hover:text-white transition-colors">
+              <Link
+                href="/user/signup"
+                className="font-medium text-indigo-300 hover:text-white transition-colors"
+              >
                 Sign up
               </Link>
             </p>

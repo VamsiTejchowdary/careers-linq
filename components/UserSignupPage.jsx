@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -16,10 +16,13 @@ import {
   AlertCircle,
   ArrowLeft,
   Loader2,
-  Building2
+  Building2, Eye, EyeOff,
 } from "lucide-react";
 
 const UserSignupPage = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState(0);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -32,18 +35,16 @@ const UserSignupPage = () => {
     password: "",
     confirmPassword: ""
   });
-  
-  const [passwordMatch, setPasswordMatch] = useState(true);
-  const [passwordStrength, setPasswordStrength] = useState(0);
+  const [resumeName, setResumeName] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [resumeName, setResumeName] = useState("");
   const [bubbles, setBubbles] = useState([]);
   const router = useRouter();
   
-  const passwordStrengthLabels = ["Weak", "Medium", "Strong", "Very Strong"];
-  const passwordStrengthColors = ["bg-red-500", "bg-yellow-500", "bg-green-500", "bg-green-600"];
-  
+  const passwordStrengthLabels = ['Weak', 'Medium', 'Strong', 'Very Strong'];
+  const passwordStrengthColors = ['bg-red-400', 'bg-yellow-400', 'bg-green-400', 'bg-green-500'];
   // Countries list
   const countries = [
     "United States", "Canada", "United Kingdom", "Australia", 
@@ -79,28 +80,39 @@ const UserSignupPage = () => {
 
   // Check password match and strength
   useEffect(() => {
-    if (formData.confirmPassword) {
-      setPasswordMatch(formData.password === formData.confirmPassword);
-    }
-    
     const strength = calculatePasswordStrength(formData.password);
     setPasswordStrength(strength);
   }, [formData.password, formData.confirmPassword]);
 
   const calculatePasswordStrength = (password) => {
     if (!password) return 0;
+    if (password.length < 8) return 0;
     
-    let strength = 0;
-    if (password.length >= 8) strength += 1;
-    if (/\d/.test(password)) strength += 1;
-    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength += 1;
-    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 1;
+    let score = 0;
+    if (password.length >= 10) score += 1;
+    if (/[A-Z]/.test(password) && /[a-z]/.test(password)) score += 1;
+    if (/[0-9]/.test(password)) score += 1;
+    if (/[^A-Za-z0-9]/.test(password)) score += 1;
     
-    return Math.min(3, strength);
+    return Math.min(3, score);
   };
+  
+  const passwordMatch = !formData.confirmPassword || formData.password === formData.confirmPassword;
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    if (name === 'password') {
+      // Simple password strength calculation
+      const strength = calculatePasswordStrength(value);
+      setPasswordStrength(strength);
+    }
+    //const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
@@ -112,12 +124,55 @@ const UserSignupPage = () => {
     }
   };
 
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isDragging) {
+      setIsDragging(true);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      const fileExtension = file.name.split('.').pop().toLowerCase();
+      
+      if (['pdf', 'doc', 'docx'].includes(fileExtension)) {
+        setFormData({ ...formData, resume: file });
+        setResumeName(file.name);
+      } else {
+        // Optional: Add error handling for invalid file types
+        alert('Please upload a PDF, DOC, or DOCX file');
+      }
+    }
+  };
+
+  const handleZoneClick = () => {
+    fileInputRef.current.click();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
   
     if (formData.password !== formData.confirmPassword) {
-      setPasswordMatch(false);
       setError("Passwords do not match");
       return;
     }
@@ -396,110 +451,134 @@ const UserSignupPage = () => {
 
               {/* Resume Upload */}
               <div>
-                <label htmlFor="resume" className="block text-sm font-medium text-indigo-200 mb-1">
-                  Upload Resume
-                </label>
-                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-indigo-500/30 border-dashed rounded-lg bg-indigo-800/20">
-                  <div className="space-y-2 text-center">
-                    <div className="flex justify-center">
-                      <FileText className="h-12 w-12 text-indigo-300" />
-                    </div>
-                    <div className="flex text-sm text-indigo-200">
-                      <label htmlFor="resume" className="relative cursor-pointer bg-transparent rounded-md font-medium text-indigo-300 hover:text-white transition-colors focus-within:outline-none">
-                        <span>Upload a file</span>
-                        <input 
-                          id="resume" 
-                          name="resume" 
-                          type="file" 
-                          required
-                          accept=".pdf,.doc,.docx" 
-                          className="sr-only"
-                          onChange={handleFileChange} 
-                        />
-                      </label>
-                      <p className="pl-1">or drag and drop</p>
-                    </div>
-                    <p className="text-xs text-indigo-300">
-                      PDF, DOC, DOCX up to 10MB
-                    </p>
-                    {resumeName && (
-                      <div className="flex items-center justify-center space-x-2 text-sm text-green-300">
-                        <CheckCircle2 className="h-4 w-4" />
-                        <span>{resumeName}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
+      <label htmlFor="resume" className="block text-sm font-medium text-indigo-200 mb-1">
+        Upload Resume
+      </label>
+      <div 
+        className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-2 ${isDragging ? 'border-indigo-400 bg-indigo-800/40' : 'border-indigo-500/30 bg-indigo-800/20'} border-dashed rounded-lg cursor-pointer transition-colors duration-200`}
+        onClick={handleZoneClick}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
+      >
+        <div className="space-y-2 text-center">
+          <div className="flex justify-center">
+            <FileText className={`h-12 w-12 ${isDragging ? 'text-indigo-200' : 'text-indigo-300'} transition-colors duration-200`} />
+          </div>
+          <div className="flex text-sm text-indigo-200">
+            <label htmlFor="resume" className="relative cursor-pointer bg-transparent rounded-md font-medium text-indigo-300 hover:text-white transition-colors focus-within:outline-none">
+              <span>Upload a file</span>
+              <input 
+                id="resume" 
+                name="resume" 
+                type="file" 
+                ref={fileInputRef}
+                required
+                accept=".pdf,.doc,.docx" 
+                className="sr-only"
+                onChange={handleFileChange} 
+              />
+            </label>
+            <p className="pl-1">or drag and drop</p>
+          </div>
+          <p className="text-xs text-indigo-300">
+            PDF, DOC, DOCX up to 10MB
+          </p>
+          {resumeName && (
+            <div className="flex items-center justify-center space-x-2 text-sm text-green-300">
+              <CheckCircle2 className="h-4 w-4" />
+              <span>{resumeName}</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
 
               {/* Password Fields */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-indigo-200 mb-1">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <Lock className="h-5 w-5 text-indigo-300" />
-                    </div>
-                    <input
-                      id="password"
-                      name="password"
-                      type="password"
-                      required
-                      value={formData.password}
-                      onChange={handleChange}
-                      placeholder="••••••••"
-                      className="block w-full pl-10 pr-3 py-3 bg-indigo-800/30 border border-indigo-500/50 rounded-lg focus:ring-indigo-400 focus:border-indigo-400 text-white placeholder-indigo-300"
-                    />
-                  </div>
-                  {formData.password && (
-                    <div className="mt-2">
-                      <div className="flex items-center justify-between text-xs mb-1">
-                        <span className="text-indigo-200">Password strength:</span>
-                        <span className={`font-medium ${passwordStrength === 0 ? 'text-red-400' : 
-                          passwordStrength === 1 ? 'text-yellow-400' : 
-                          'text-green-400'}`}>
-                          {passwordStrengthLabels[passwordStrength]}
-                        </span>
-                      </div>
-                      <div className="w-full bg-indigo-800/40 rounded-full h-1.5">
-                        <div
-                          className={`h-1.5 rounded-full ${passwordStrengthColors[passwordStrength]}`}
-                          style={{ width: `${(passwordStrength + 1) * 25}%` }}
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-                
-                <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-indigo-200 mb-1">
-                    Confirm Password
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <Lock className="h-5 w-5 text-indigo-300" />
-                    </div>
-                    <input
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      type="password"
-                      required
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      placeholder="••••••••"
-                      className={`block w-full pl-10 pr-3 py-3 bg-indigo-800/30 border ${!passwordMatch && formData.confirmPassword ? 'border-red-500 ring-1 ring-red-500' : 'border-indigo-500/50'} rounded-lg focus:ring-indigo-400 focus:border-indigo-400 text-white placeholder-indigo-300`}
-                    />
-                  </div>
-                  {!passwordMatch && formData.confirmPassword && (
-                    <p className="mt-2 text-sm text-red-400 flex items-center">
-                      <AlertCircle className="h-4 w-4 mr-1" />
-                      Passwords do not match
-                    </p>
-                  )}
-                </div>
-              </div>
+      <div>
+        <label htmlFor="password" className="block text-sm font-medium text-indigo-200 mb-1">
+          Password
+        </label>
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <Lock className="h-5 w-5 text-indigo-300" />
+          </div>
+          <input
+            id="password"
+            name="password"
+            type={showPassword ? "text" : "password"}
+            required
+            value={formData.password}
+            onChange={handleChange}
+            placeholder="••••••••"
+            className="block w-full pl-10 pr-10 py-3 bg-indigo-800/30 border border-indigo-500/50 rounded-lg focus:ring-indigo-400 focus:border-indigo-400 text-white placeholder-indigo-300"
+          />
+          <button
+            type="button"
+            className="absolute inset-y-0 right-0 flex items-center pr-3 text-indigo-300 hover:text-indigo-100"
+            onClick={() => setShowPassword(!showPassword)}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+          </button>
+        </div>
+        {formData.password && (
+          <div className="mt-2">
+            <div className="flex items-center justify-between text-xs mb-1">
+              <span className="text-indigo-200">Password strength:</span>
+              <span className={`font-medium ${passwordStrength === 0 ? 'text-red-400' : 
+                passwordStrength === 1 ? 'text-yellow-400' : 
+                'text-green-400'}`}>
+                {passwordStrengthLabels[passwordStrength]}
+              </span>
+            </div>
+            <div className="w-full bg-indigo-800/40 rounded-full h-1.5">
+              <div
+                className={`h-1.5 rounded-full ${passwordStrengthColors[passwordStrength]}`}
+                style={{ width: `${(passwordStrength + 1) * 25}%` }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+      
+      <div>
+        <label htmlFor="confirmPassword" className="block text-sm font-medium text-indigo-200 mb-1">
+          Confirm Password
+        </label>
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <Lock className="h-5 w-5 text-indigo-300" />
+          </div>
+          <input
+            id="confirmPassword"
+            name="confirmPassword"
+            type={showConfirmPassword ? "text" : "password"}
+            required
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            placeholder="••••••••"
+            className={`block w-full pl-10 pr-10 py-3 bg-indigo-800/30 border ${!passwordMatch && formData.confirmPassword ? 'border-red-500 ring-1 ring-red-500' : 'border-indigo-500/50'} rounded-lg focus:ring-indigo-400 focus:border-indigo-400 text-white placeholder-indigo-300`}
+          />
+          <button
+            type="button"
+            className="absolute inset-y-0 right-0 flex items-center pr-3 text-indigo-300 hover:text-indigo-100"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+          >
+            {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+          </button>
+        </div>
+        {!passwordMatch && formData.confirmPassword && (
+          <p className="mt-2 text-sm text-red-400 flex items-center">
+            <AlertCircle className="h-4 w-4 mr-1" />
+            Passwords do not match
+          </p>
+        )}
+      </div>
+    </div>
 
               {/* Terms Agreement */}
               <div className="flex items-start">
