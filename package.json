@@ -19,6 +19,7 @@
     "dotenv": "^16.4.7",
     "formidable": "^3.5.2",
     "framer-motion": "^12.5.0",
+    "jiti": "^2.4.2",
     "jose": "^6.0.10",
     "lucide-react": "^0.483.0",
     "mongodb": "^6.15.0",
