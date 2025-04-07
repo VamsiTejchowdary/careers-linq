@@ -31,6 +31,8 @@ export default function JobDetailPage() {
   const fileInputRef = useRef(null);
   const params = useParams();
   const router = useRouter();
+  const [detailedScores, setDetailedScores] = useState(null);
+  const [matchedKeywords, setMatchedKeywords] = useState(null);
   const id = params?.id;
 
   useEffect(() => {
@@ -100,39 +102,115 @@ export default function JobDetailPage() {
       toast.error("Please select or upload a resume first");
       return;
     }
-
+  
     setIsCheckingScore(true);
     setSimilarityScore(null);
-
-    const formDataToSend = new FormData();
-    formDataToSend.append("jobId", id);
-    if (formData.resume instanceof File) {
-      formDataToSend.append("resume", formData.resume);
-    } else {
-      formDataToSend.append("resumeUrl", formData.resume); // Send URL if it’s a string
-    }
-
+  
     try {
-      const response = await fetch("/api/resume-score-cal", {
-        method: "POST",
-        body: formDataToSend,
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to check resume match");
+      let requestOptions;
+      
+      // Check if resume is a File object or a URL string
+      if (formData.resume instanceof File) {
+        // For file uploads, use FormData
+        const formDataToSend = new FormData();
+        formDataToSend.append("jobId", id);
+        formDataToSend.append("resume", formData.resume);
+        
+        requestOptions = {
+          method: "POST",
+          body: formDataToSend,
+        };
+        console.log("Sending resume file for scoring");
+      } else {
+        // For URL string, use JSON request
+        const resumeUrl = formData.resume; // This is a URL string
+        
+        // Validate URL format before sending
+        if (typeof resumeUrl !== 'string' || !resumeUrl.trim()) {
+          toast.error("Invalid resume URL format");
+          setIsCheckingScore(false);
+          return;
+        }
+        
+        // Check if URL is accessible (optional frontend validation)
+        try {
+          // This is a simple HEAD request to check if the URL is accessible
+          const urlCheck = await fetch(resumeUrl, { 
+            method: 'HEAD',
+            mode: 'no-cors' // This might be needed for cross-origin URLs
+          });
+          console.log("URL check status:", urlCheck.status);
+        } catch (urlCheckError) {
+          console.warn("URL validation warning:", urlCheckError);
+          // We continue anyway as the backend will do the full validation
+        }
+        
+        requestOptions = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            jobId: id,
+            resumeUrl: resumeUrl
+          }),
+        };
+        console.log("Sending resume URL for scoring:", resumeUrl);
       }
-      const result = await response.json();
-      setSimilarityScore(result.similarityScore);
+  
+      // Make the API call
+      const response = await fetch("/api/resume-score-cal", requestOptions);
+      
+      // Always read response as text first
+      const responseText = await response.text();
+      
+      // Check if response is empty
+      if (!responseText) {
+        throw new Error("Empty response received from server");
+      }
+      
+      // Parse response
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch (jsonError) {
+        console.error("Failed to parse response as JSON:", responseText);
+        throw new Error("Invalid response format from server");
+      }
+      
+      // Handle error responses
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to check resume match");
+      }
+      
+      // Update state with the result
+      console.log("Resume match result:", result);
+      setSimilarityScore(result.similarityScore || 0);
+      
+      // Handle additional data if available
+      if (result.detailedScores) {
+        setDetailedScores?.(result.detailedScores);
+      }
+      
+      if (result.matchedKeywords) {
+        setMatchedKeywords?.(result.matchedKeywords);
+      }
+      console.log("Detailed scores:", result.detailedScores);
+      console.log("Matched keywords:", result.matchedKeywords);
+      toast.success("Resume match score calculated successfully");
     } catch (error) {
       console.error("Error checking resume match:", error);
-      toast.error(
-        error.message || "Failed to check resume match. Please try again."
-      );
+      
+      // Special handling for common URL-related errors
+      if (error.message?.includes("URL") || error.message?.includes("fetch")) {
+        toast.error("Could not access the resume file. Please check if the URL is correct and accessible.");
+      } else {
+        toast.error(error.message || "Failed to check resume match. Please try again.");
+      }
     } finally {
       setIsCheckingScore(false);
     }
   };
-
   // ... (rest of the code remains unchanged)
 
   const handleSubmit = async (e) => {
@@ -942,7 +1020,7 @@ export default function JobDetailPage() {
               <div className="h-10 w-10 relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg"></div>
                 <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-2xl">
-                  L
+                  @
                 </div>
               </div>
               <span className="ml-3 text-xl font-bold">Career Clutch</span>
