@@ -242,8 +242,8 @@ export default function ProfilePage() {
               <span className="ml-3 text-xl font-bold text-white">Career Clutch</span>
             </Link>
             <nav className="flex space-x-6">
-              <Link href="/dashboard" className="text-indigo-200 hover:text-white transition-colors">
-                Dashboard
+              <Link href="/appliedjobs" className="text-indigo-200 hover:text-white transition-colors">
+                Applied Jobs
               </Link>
               <Link href="/careers" className="text-indigo-200 hover:text-white transition-colors">
                 Careers

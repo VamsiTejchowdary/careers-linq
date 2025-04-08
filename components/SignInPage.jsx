@@ -72,7 +72,7 @@ const SignInPage = () => {
       toast.success("Sign-in successful!");
       setTimeout(() => {
         window.location.href = "/careers";
-      }, 2000);
+      }, 1000);
     } catch (err) {
       toast.error(err.message || "Sign-in failed.");
       setError(err.message || "Invalid email or password. Please try again.");
