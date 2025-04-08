@@ -8,6 +8,7 @@ import Busboy from "busboy";
 export async function GET(req) {
   try {
     await connectMongoDB();
+    console.log("Connected to MongoDB:", process.env.MONGODB_URI);
     const token = req.cookies.get("token")?.value;
 
     if (!token) {

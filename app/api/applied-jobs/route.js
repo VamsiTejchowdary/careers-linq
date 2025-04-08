@@ -7,6 +7,7 @@ export async function GET(req) {
   try {
     // Connect to MongoDB
     await connectMongoDB();
+    console.log("Connected to MongoDB:", process.env.MONGODB_URI);
 
     // Extract email from query parameters
     const { searchParams } = new URL(req.url);
