@@ -23,6 +23,10 @@ const jobApplicationSchema = new Schema(
       type: String,
       default: "",
     },
+    portfolio: {
+      type: String,
+      default: "",
+    },
     resume: {
       type: String,
       required: true,

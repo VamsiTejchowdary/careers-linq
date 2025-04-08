@@ -50,7 +50,7 @@ export async function POST(req) {
       busboy.end(body);
     });
 
-    const { name, email, phone, linkedin, coverLetter, jobId, similarityScore, resumeUrl } = fields;
+    const { name, email, phone, linkedin, portfolio, coverLetter, jobId, similarityScore, resumeUrl } = fields;
 
     const job = await Job.findById(jobId);
     if (!job) {
@@ -87,6 +87,7 @@ export async function POST(req) {
       phone,
       linkedin,
       coverLetter,
+      portfolio,
       resume: finalResumeUrl,
       jobId,
       similarityScore,

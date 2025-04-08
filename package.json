@@ -19,7 +19,6 @@
     "dotenv": "^16.4.7",
     "formidable": "^3.5.2",
     "framer-motion": "^12.5.0",
-    "jiti": "^2.4.2",
     "jose": "^6.0.10",
     "lucide-react": "^0.483.0",
     "mongodb": "^6.15.0",
@@ -42,6 +41,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "jiti": "^2.4.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

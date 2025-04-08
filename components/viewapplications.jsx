@@ -17,6 +17,7 @@ import {
   User,
   Menu,
   X,
+  Globe,
 } from "lucide-react";
 
 const ApplicationsPage = () => {
@@ -169,76 +170,75 @@ const ApplicationsPage = () => {
                     transition={{ duration: 0.3, delay: index * 0.1 }}
                     className="bg-white rounded-xl shadow-md overflow-hidden"
                   >
-                    
                     {/* Card header - always visible */}
-<div
-  className={`p-6 cursor-pointer transition-colors ${
-    expandedId === app._id
-      ? "bg-blue-50"
-      : "hover:bg-gray-50"
-  }`}
-  onClick={() => toggleExpand(app._id)}
->
-  <div className="flex flex-col md:flex-row md:items-center justify-between">
-    <div className="flex-1">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-gray-800">
-          {app.name}
-        </h2>
-      </div>
-      <div className="flex flex-wrap items-center mt-2 text-gray-600">
-        <div className="flex items-center mr-4 mb-2 md:mb-0">
-          <Briefcase className="h-4 w-4 mr-1 text-blue-600" />
-          <span>
-            {app.jobId
-              ? app.jobId.jobTitle
-              : "Job Not Found"}
-          </span>
-        </div>
-        {app.jobId?.department && (
-          <div className="flex items-center mr-4 mb-2 md:mb-0">
-            <Building2 className="h-4 w-4 mr-1 text-blue-600" />
-            <span>{app.jobId.department}</span>
-          </div>
-        )}
-        <div className="flex items-center">
-          <Calendar className="h-4 w-4 mr-1 text-blue-600" />
-          <span className="text-sm">
-            {new Date(app.createdAt).toLocaleDateString()}
-          </span>
-        </div>
-      </div>
-    </div>
-    <div className="flex items-center mt-4 md:mt-0">
-      {/* Resume Score Badge */}
-      <div 
-        className={`
+                    <div
+                      className={`p-6 cursor-pointer transition-colors ${
+                        expandedId === app._id
+                          ? "bg-blue-50"
+                          : "hover:bg-gray-50"
+                      }`}
+                      onClick={() => toggleExpand(app._id)}
+                    >
+                      <div className="flex flex-col md:flex-row md:items-center justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <h2 className="text-xl font-bold text-gray-800">
+                              {app.name}
+                            </h2>
+                          </div>
+                          <div className="flex flex-wrap items-center mt-2 text-gray-600">
+                            <div className="flex items-center mr-4 mb-2 md:mb-0">
+                              <Briefcase className="h-4 w-4 mr-1 text-blue-600" />
+                              <span>
+                                {app.jobId
+                                  ? app.jobId.jobTitle
+                                  : "Job Not Found"}
+                              </span>
+                            </div>
+                            {app.jobId?.department && (
+                              <div className="flex items-center mr-4 mb-2 md:mb-0">
+                                <Building2 className="h-4 w-4 mr-1 text-blue-600" />
+                                <span>{app.jobId.department}</span>
+                              </div>
+                            )}
+                            <div className="flex items-center">
+                              <Calendar className="h-4 w-4 mr-1 text-blue-600" />
+                              <span className="text-sm">
+                                {new Date(app.createdAt).toLocaleDateString()}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center mt-4 md:mt-0">
+                          {/* Resume Score Badge */}
+                          <div
+                            className={`
           mr-3 px-3 py-1 rounded-full text-sm font-semibold
           ${
-            app.similarityScore >= 70 
-              ? 'bg-green-100 text-green-800' 
-              : app.similarityScore >= 40 
-                ? 'bg-yellow-100 text-yellow-800' 
-                : 'bg-red-100 text-red-800'
+            app.similarityScore >= 70
+              ? "bg-green-100 text-green-800"
+              : app.similarityScore >= 40
+              ? "bg-yellow-100 text-yellow-800"
+              : "bg-red-100 text-red-800"
           }
         `}
-        title="Resume Match Score"
-      >
-        {app.similarityScore}%
-      </div>
-      
-      <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm mr-3">
-        New
-      </div>
-      
-      {expandedId === app._id ? (
-        <ChevronUp className="h-5 w-5 text-gray-500" />
-      ) : (
-        <ChevronDown className="h-5 w-5 text-gray-500" />
-      )}
-    </div>
-  </div>
-</div>
+                            title="Resume Match Score"
+                          >
+                            {app.similarityScore}%
+                          </div>
+
+                          <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm mr-3">
+                            New
+                          </div>
+
+                          {expandedId === app._id ? (
+                            <ChevronUp className="h-5 w-5 text-gray-500" />
+                          ) : (
+                            <ChevronDown className="h-5 w-5 text-gray-500" />
+                          )}
+                        </div>
+                      </div>
+                    </div>
 
                     {/* Expanded content */}
                     <AnimatePresence>
@@ -296,6 +296,29 @@ const ApplicationsPage = () => {
                                             /^https?:\/\/(www\.)?linkedin\.com\//,
                                             ""
                                           )}
+                                        </a>
+                                      </div>
+                                    </div>
+                                  )}
+                                  {app.portfolio && (
+                                    <div className="flex items-start">
+                                      <Globe className="h-5 w-5 text-blue-600 mr-3 mt-0.5" />{" "}
+                                      {/* Changed MapPin to Globe */}
+                                      <div>
+                                        <p className="text-sm text-gray-500">
+                                          Portfolio
+                                        </p>
+                                        <a
+                                          href={app.portfolio}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="text-blue-600 hover:underline"
+                                        >
+                                          {app.portfolio.replace(
+                                            /^https?:\/\/(www\.)?/,
+                                            ""
+                                          )}{" "}
+                                          {/* Generic URL cleanup */}
                                         </a>
                                       </div>
                                     </div>

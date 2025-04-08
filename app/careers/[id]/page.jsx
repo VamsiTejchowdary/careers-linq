@@ -74,6 +74,8 @@ export default function JobDetailPage() {
               phone: currentUser.phone || "",
               linkedin: currentUser.linkedin || "",
               resume: currentUser.resume || null,
+              coverLetter: currentUser.coverLetter || "",
+              portfolio: currentUser.portfolio || "",
             }));
 
             // 3. Check if user already applied (only if user is logged in)
@@ -275,6 +277,7 @@ export default function JobDetailPage() {
     data.append("phone", formData.phone || user.phone || "");
     data.append("linkedin", formData.linkedin || user.linkedin || "");
     data.append("coverLetter", formData.coverLetter || "");
+    data.append("portfolio", formData.portfolio || "");
     if (formData.resume instanceof File) {
       data.append("resume", formData.resume);
     } else {
