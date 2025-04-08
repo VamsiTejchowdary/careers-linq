@@ -625,7 +625,7 @@ const UserSignupPage = () => {
               <div className="text-center mt-6">
                 <p className="text-indigo-200">
                   Already have an account?{" "}
-                  <Link href="/signin" className="font-medium text-indigo-300 hover:text-white transition-colors">
+                  <Link href="/user/signin" className="font-medium text-indigo-300 hover:text-white transition-colors">
                     Sign in
                   </Link>
                 </p>
