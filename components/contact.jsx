@@ -107,6 +107,7 @@ export default function ContactForm() {
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
   };
 
+  
   return (
     <div  id="contact-section" className="w-full bg-white py-12 px-6 md:px-8 rounded-xl shadow-lg mb-12">
       <div className="container max-w-screen-md mx-auto">
