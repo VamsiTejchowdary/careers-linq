@@ -514,7 +514,7 @@ export default function JobDetailPage() {
                   Profile
                 </Link>
                 <Link
-                  href="/applied-jobs"
+                  href="/appliedjobs"
                   className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors duration-150"
                   onClick={() => setIsDropdownOpen(false)}
                 >

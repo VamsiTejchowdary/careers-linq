@@ -76,7 +76,7 @@ const AppliedJobs = () => {
       const fetchAppliedJobs = async () => {
         try {
           const response = await fetch(
-            `/api/applied-jobs?email=${user.email}`,
+            `/api/appliedjobs?email=${user.email}`,
             {
               credentials: "include",
             }

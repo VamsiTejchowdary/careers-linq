@@ -262,7 +262,7 @@ export default function ProfilePage() {
           {/* Page header with back button */}
           <div className="mb-8 flex items-center">
             <button
-              onClick={() => router.push("/dashboard")}
+              onClick={() => router.push("/")}
               className="mr-4 p-2 rounded-full bg-indigo-800/30 hover:bg-indigo-700/40 border border-indigo-500/30 transition-colors"
             >
               <ArrowLeft className="h-5 w-5 text-indigo-200" />
