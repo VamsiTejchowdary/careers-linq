@@ -1348,10 +1348,10 @@ export default function JobDetailPage() {
                             transition={{ delay: 0.9, duration: 0.5 }}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            href="/dashboard"
+                            href="/appliedjobs"
                             className="px-6 py-3 bg-white text-indigo-600 font-medium rounded-md border border-indigo-200 hover:bg-indigo-50 transition-all shadow-sm"
                           >
-                            View Dashboard
+                            View Job
                           </motion.a>
                         </div>
                       </motion.div>

@@ -633,9 +633,9 @@ const AppliedJobs = () => {
                                 {job.applicationId.substring(0, 8)}...
                               </div>
                               <div className="flex space-x-3">
-                                <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                                {/* <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
                                   Withdraw Application
-                                </button>
+                                </button> */}
                                 {job && job.jobDetails && (
   <Link
     href={`/careers/${job.jobId}`}
