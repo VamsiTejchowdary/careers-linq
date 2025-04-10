@@ -29,6 +29,7 @@ export default function JobDetailPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [similarityScore, setSimilarityScore] = useState(null);
   const [isCheckingScore, setIsCheckingScore] = useState(false);
+  const [hasCheckedScore, setHasCheckedScore] = useState(false); // New state
   const fileInputRef = useRef(null);
   const params = useParams();
   const router = useRouter();
@@ -94,11 +95,9 @@ export default function JobDetailPage() {
               }
             }
           } else {
-            // User is not authenticated, but we don't treat this as an error
             setUser(null);
           }
         } catch (err) {
-          // Authentication error - just set user to null without displaying error
           console.log("Authentication error:", err.message);
           setUser(null);
         }
@@ -139,6 +138,7 @@ export default function JobDetailPage() {
     }
     setFormData((prev) => ({ ...prev, resume: file }));
     setSimilarityScore(null);
+    setHasCheckedScore(false); // Reset when new resume is uploaded
     fileInputRef.current.value = null; // Reset input for re-upload
   };
 
@@ -154,9 +154,7 @@ export default function JobDetailPage() {
     try {
       let requestOptions;
 
-      // Check if resume is a File object or a URL string
       if (formData.resume instanceof File) {
-        // For file uploads, use FormData
         const formDataToSend = new FormData();
         formDataToSend.append("jobId", id);
         formDataToSend.append("resume", formData.resume);
@@ -167,27 +165,22 @@ export default function JobDetailPage() {
         };
         console.log("Sending resume file for scoring");
       } else {
-        // For URL string, use JSON request
-        const resumeUrl = formData.resume; // This is a URL string
+        const resumeUrl = formData.resume;
 
-        // Validate URL format before sending
         if (typeof resumeUrl !== "string" || !resumeUrl.trim()) {
           toast.error("Invalid resume URL format");
           setIsCheckingScore(false);
           return;
         }
 
-        // Check if URL is accessible (optional frontend validation)
         try {
-          // This is a simple HEAD request to check if the URL is accessible
           const urlCheck = await fetch(resumeUrl, {
             method: "HEAD",
-            mode: "no-cors", // This might be needed for cross-origin URLs
+            mode: "no-cors",
           });
           console.log("URL check status:", urlCheck.status);
         } catch (urlCheckError) {
           console.warn("URL validation warning:", urlCheckError);
-          // We continue anyway as the backend will do the full validation
         }
 
         requestOptions = {
@@ -203,18 +196,13 @@ export default function JobDetailPage() {
         console.log("Sending resume URL for scoring:", resumeUrl);
       }
 
-      // Make the API call
       const response = await fetch("/api/resume-score-cal", requestOptions);
-
-      // Always read response as text first
       const responseText = await response.text();
 
-      // Check if response is empty
       if (!responseText) {
         throw new Error("Empty response received from server");
       }
 
-      // Parse response
       let result;
       try {
         result = JSON.parse(responseText);
@@ -223,30 +211,21 @@ export default function JobDetailPage() {
         throw new Error("Invalid response format from server");
       }
 
-      // Handle error responses
       if (!response.ok) {
         throw new Error(result.message || "Failed to check resume match");
       }
 
-      // Update state with the result
       console.log("Resume match result:", result);
       setSimilarityScore(result.similarityScore || 0);
+      setHasCheckedScore(true); // Enable submit after score is checked
 
-      // Handle additional data if available
-      if (result.detailedScores) {
-        setDetailedScores?.(result.detailedScores);
-      }
-
-      if (result.matchedKeywords) {
-        setMatchedKeywords?.(result.matchedKeywords);
-      }
+      if (result.detailedScores) setDetailedScores(result.detailedScores);
+      if (result.matchedKeywords) setMatchedKeywords(result.matchedKeywords);
       console.log("Detailed scores:", result.detailedScores);
       console.log("Matched keywords:", result.matchedKeywords);
       toast.success("Resume match score calculated successfully");
     } catch (error) {
       console.error("Error checking resume match:", error);
-
-      // Special handling for common URL-related errors
       if (error.message?.includes("URL") || error.message?.includes("fetch")) {
         toast.error(
           "Could not access the resume file. Please check if the URL is correct and accessible."
@@ -260,7 +239,6 @@ export default function JobDetailPage() {
       setIsCheckingScore(false);
     }
   };
-  // ... (rest of the code remains unchanged)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -281,7 +259,7 @@ export default function JobDetailPage() {
     if (formData.resume instanceof File) {
       data.append("resume", formData.resume);
     } else {
-      data.append("resumeUrl", formData.resume); // Send URL if not a new file
+      data.append("resumeUrl", formData.resume);
     }
     data.append("jobId", id);
     if (similarityScore !== null)
@@ -302,6 +280,8 @@ export default function JobDetailPage() {
           coverLetter: "",
         }));
         setSimilarityScore(null);
+        setHasCheckedScore(false); // Reset after submission
+        toast.success("Application submitted successfully!");
       } else {
         toast.error(result.message || "Failed to submit application");
       }
@@ -1081,186 +1061,167 @@ export default function JobDetailPage() {
                         transition={{ duration: 0.3 }}
                       >
                         <form onSubmit={handleSubmit} className="space-y-6">
-                          <div className="bg-gray-50 p-6 rounded-lg border border-gray-100">
-                            <label className="block text-base font-medium text-gray-700 mb-3 flex items-center">
-                              <FileText className="h-5 w-5 mr-2 text-indigo-600" />
-                              Your Resume *
-                            </label>
-                            <div className="space-y-3">
-                              {user.resume && (
-                                <div className="flex items-center justify-between p-3 bg-indigo-50 rounded-md border border-indigo-100">
-                                  <span className="text-indigo-700 truncate font-medium">
-                                    {formData.resume?.name ||
-                                      formData.resume?.split("/").pop() ||
-                                      "Current Resume"}
-                                  </span>
-                                  <a
-                                    href={formData.resume}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-indigo-600 hover:text-indigo-800 p-2 rounded-full hover:bg-indigo-100 transition-all"
-                                  >
-                                    <FileText size={20} />
-                                  </a>
-                                </div>
-                              )}
+      <div className="bg-gray-50 p-6 rounded-lg border border-gray-100">
+        <label className="block text-base font-medium text-gray-700 mb-3 flex items-center">
+          <FileText className="h-5 w-5 mr-2 text-indigo-600" />
+          Your Resume *
+        </label>
+        <div className="space-y-3">
+          {user.resume && (
+            <div className="flex items-center justify-between p-3 bg-indigo-50 rounded-md border border-indigo-100">
+              <span className="text-indigo-700 truncate font-medium">
+                {formData.resume?.name || formData.resume?.split("/").pop() || "Current Resume"}
+              </span>
+              <a
+                href={formData.resume}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-indigo-600 hover:text-indigo-800 p-2 rounded-full hover:bg-indigo-100 transition-all"
+              >
+                <FileText size={20} />
+              </a>
+            </div>
+          )}
 
-                              <div className="flex gap-3">
-                                <button
-                                  type="button"
-                                  onClick={triggerFileInput}
-                                  className="flex-1 px-4 py-3 bg-white text-indigo-700 font-medium rounded-md border border-indigo-200 hover:bg-indigo-50 transition-all flex items-center justify-center shadow-sm"
-                                >
-                                  <Upload className="h-4 w-4 mr-2" />{" "}
-                                  {user.resume
-                                    ? "Update Resume"
-                                    : "Upload Resume"}
-                                </button>
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={triggerFileInput}
+              className="flex-1 px-4 py-3 bg-white text-indigo-700 font-medium rounded-md border border-indigo-200 hover:bg-indigo-50 transition-all flex items-center justify-center shadow-sm"
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              {user.resume ? "Update Resume" : "Upload Resume"}
+            </button>
 
-                                {formData.resume && (
-                                  <button
-                                    type="button"
-                                    onClick={handleCheckScore}
-                                    disabled={isCheckingScore}
-                                    className="p-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-400 focus:ring-offset-1 transition-all disabled:bg-indigo-400 shadow-sm"
-                                    title="Check Resume Match"
-                                    aria-label="Check Resume Match"
-                                  >
-                                    {isCheckingScore ? (
-                                      <Loader className="h-5 w-5 animate-spin" />
-                                    ) : (
-                                      <FileSearch size={20} />
-                                    )}
-                                  </button>
-                                )}
-                              </div>
+            {formData.resume && (
+              <button
+                type="button"
+                onClick={handleCheckScore}
+                disabled={isCheckingScore}
+                className="p-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-400 focus:ring-offset-1 transition-all disabled:bg-indigo-400 shadow-sm"
+                title="Check Resume Match"
+                aria-label="Check Resume Match"
+              >
+                {isCheckingScore ? (
+                  <Loader className="h-5 w-5 animate-spin" />
+                ) : (
+                  <FileSearch size={20} />
+                )}
+              </button>
+            )}
+          </div>
 
-                              <input
-                                type="file"
-                                ref={fileInputRef}
-                                accept=".pdf,.doc,.docx"
-                                onChange={handleFileChange}
-                                className="hidden"
-                              />
+          <input
+            type="file"
+            ref={fileInputRef}
+            accept=".pdf,.doc,.docx"
+            onChange={handleFileChange}
+            className="hidden"
+          />
 
-                              {similarityScore !== null && !isCheckingScore && (
-                                <motion.div
-                                  initial={{ opacity: 0, y: 10 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  className="flex items-center p-3 mt-2 rounded-md"
-                                  style={{
-                                    backgroundColor:
-                                      similarityScore >= 70
-                                        ? "rgba(220, 252, 231, 0.7)"
-                                        : "rgba(254, 249, 195, 0.7)",
-                                    border: `1px solid ${
-                                      similarityScore >= 70
-                                        ? "#86efac"
-                                        : "#fef08a"
-                                    }`,
-                                  }}
-                                >
-                                  {similarityScore >= 70 ? (
-                                    <CheckCircle
-                                      size={24}
-                                      className="text-green-600 mr-3 flex-shrink-0"
-                                    />
-                                  ) : (
-                                    <AlertCircle
-                                      size={24}
-                                      className="text-yellow-600 mr-3 flex-shrink-0"
-                                    />
-                                  )}
-                                  <div>
-                                    <span
-                                      className={`font-semibold block ${
-                                        similarityScore >= 70
-                                          ? "text-green-700"
-                                          : "text-yellow-700"
-                                      }`}
-                                    >
-                                      {similarityScore}% Match with Job
-                                      Requirements
-                                    </span>
-                                    <span className="text-sm text-gray-600">
-                                      {similarityScore >= 70
-                                        ? "Your resume appears to be a good match for this position!"
-                                        : "Consider customizing your resume to highlight relevant skills."}
-                                    </span>
-                                  </div>
-                                </motion.div>
-                              )}
-                            </div>
-                          </div>
+          {similarityScore !== null && !isCheckingScore && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center p-3 mt-2 rounded-md"
+              style={{
+                backgroundColor: similarityScore >= 70 ? "rgba(220, 252, 231, 0.7)" : "rgba(254, 249, 195, 0.7)",
+                border: `1px solid ${similarityScore >= 70 ? "#86efac" : "#fef08a"}`,
+              }}
+            >
+              {similarityScore >= 70 ? (
+                <CheckCircle size={24} className="text-green-600 mr-3 flex-shrink-0" />
+              ) : (
+                <AlertCircle size={24} className="text-yellow-600 mr-3 flex-shrink-0" />
+              )}
+              <div>
+                <span
+                  className={`font-semibold block ${
+                    similarityScore >= 70 ? "text-green-700" : "text-yellow-700"
+                  }`}
+                >
+                  {similarityScore}% Match with Job Requirements
+                </span>
+                <span className="text-sm text-gray-600">
+                  {similarityScore >= 70
+                    ? "Your resume appears to be a good match for this position!"
+                    : "Consider customizing your resume to highlight relevant skills."}
+                </span>
+              </div>
+            </motion.div>
+          )}
+        </div>
+      </div>
 
-                          <div className="bg-gray-50 p-6 rounded-lg border border-gray-100">
-                            <label className="block text-base font-medium text-gray-700 mb-3 flex items-center">
-                              <svg
-                                className="h-5 w-5 mr-2 text-indigo-600"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                                />
-                              </svg>
-                              Cover Letter (Optional)
-                            </label>
-                            <motion.textarea
-                              whileFocus={{ scale: 1.01 }}
-                              name="coverLetter"
-                              rows="5"
-                              value={formData.coverLetter}
-                              onChange={handleInputChange}
-                              className="w-full px-4 py-3 text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white shadow-sm"
-                              placeholder="Explain why you're interested in this position and how your skills align with the requirements..."
-                            />
-                            <p className="text-xs text-gray-500 mt-2">
-                              Pro tip: Personalize your cover letter to
-                              highlight relevant experience and show your
-                              interest in the role.
-                            </p>
-                          </div>
+      <div className="bg-gray-50 p-6 rounded-lg border border-gray-100">
+        <label className="block text-base font-medium text-gray-700 mb-3 flex items-center">
+          <svg
+            className="h-5 w-5 mr-2 text-indigo-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+            />
+          </svg>
+          Cover Letter (Optional)
+        </label>
+        <motion.textarea
+          whileFocus={{ scale: 1.01 }}
+          name="coverLetter"
+          rows="5"
+          value={formData.coverLetter}
+          onChange={handleInputChange}
+          className="w-full px-4 py-3 text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white shadow-sm"
+          placeholder="Explain why you're interested in this position and how your skills align with the requirements..."
+        />
+        <p className="text-xs text-gray-500 mt-2">
+          Pro tip: Personalize your cover letter to highlight relevant experience and show your interest in the role.
+        </p>
+      </div>
 
-                          <motion.button
-                            type="submit"
-                            disabled={isLoading}
-                            className="w-full px-6 py-4 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition-all disabled:bg-indigo-400 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                          >
-                            {isLoading ? (
-                              <span className="flex items-center justify-center">
-                                <svg
-                                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <circle
-                                    className="opacity-25"
-                                    cx="12"
-                                    cy="12"
-                                    r="10"
-                                    stroke="currentColor"
-                                    strokeWidth="4"
-                                  />
-                                  <path
-                                    className="opacity-75"
-                                    fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                  />
-                                </svg>
-                                Submitting Application...
-                              </span>
-                            ) : (
-                              "Submit Application"
-                            )}
-                          </motion.button>
-                        </form>
+      <motion.button
+        type="submit"
+        disabled={!hasCheckedScore || isLoading}
+        className="w-full px-6 py-4 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition-all disabled:bg-indigo-400 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+      >
+        {isLoading ? (
+          <span className="flex items-center justify-center">
+            <svg
+              className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
+            </svg>
+            Submitting Application...
+          </span>
+        ) : (
+          "Submit Application"
+        )}
+      </motion.button>
+      <p className="text-sm text-gray-600 mt-2">
+        Please check your resume score before submitting the application.
+      </p>
+    </form>
                       </motion.div>
                     ) : (
                       <motion.div
