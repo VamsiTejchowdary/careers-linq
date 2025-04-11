@@ -105,6 +105,7 @@ export async function POST(req) {
       portfolio: portfolio || "",
       resume: resumeUrl,
       password: hashedPassword,
+        isVerified: true,
     });
 
     return NextResponse.json(
