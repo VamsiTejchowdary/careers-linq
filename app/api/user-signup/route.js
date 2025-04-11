@@ -78,9 +78,6 @@ export async function POST(req) {
     }
 
     const resumeFile = files.resume;
-    console.log("Resume file mimetype:", resumeFile.mimetype);
-    console.log("Resume filename:", resumeFile.filename);
-    console.log("Buffer length:", resumeFile.buffer.length);
 
     // Upload resume to Vercel Blob
     const blob = await put(resumeFile.filename, resumeFile.buffer, {
@@ -105,8 +102,32 @@ export async function POST(req) {
       portfolio: portfolio || "",
       resume: resumeUrl,
       password: hashedPassword,
-        isVerified: true,
+      isVerified: true,
     });
+
+    // Call the send-welcome-email API
+    try {
+      const emailResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/emails/user-sign-up/send-welcome-email`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            firstName,
+            lastName,
+            email,
+          }),
+        }
+      );
+
+      if (!emailResponse.ok) {
+        console.error("Failed to send welcome email:", await emailResponse.text());
+      }
+    } catch (emailError) {
+      console.error("Error calling email API:", emailError);
+    }
 
     return NextResponse.json(
       {

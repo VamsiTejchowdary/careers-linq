@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ToastContainer, toast } from "react-toastify";
@@ -29,6 +29,7 @@ const PasswordResetPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [resetComplete, setResetComplete] = useState(false);
+  const otpInputs = useRef(Array(6).fill(null));
 
   const togglePasswordVisibility = (field) => {
     if (field === "password") setShowPassword(!showPassword);
@@ -51,6 +52,7 @@ const PasswordResetPage = () => {
       }
       setBubbles(newBubbles);
     };
+    otpInputs.current = otpInputs.current.slice(0, 6);
     generateBubbles();
     window.addEventListener("resize", generateBubbles);
     return () => window.removeEventListener("resize", generateBubbles);
@@ -62,7 +64,10 @@ const PasswordResetPage = () => {
     newOtp[index] = value;
     setOtp(newOtp);
     if (value && index < 5) {
-      document.getElementById(`otp-${index + 1}`).focus();
+      // Check if the next ref exists before focusing
+      if (otpInputs.current[index + 1]) {
+        otpInputs.current[index + 1].focus();
+      }
     }
   };
 
@@ -83,18 +88,49 @@ const PasswordResetPage = () => {
     }
   };
 
+  const handleOtpKeyDown = (index, e) => {
+    // Move to previous input on backspace if current input is empty
+    if (e.key === "Backspace") {
+      if (otp[index] === "") {
+        // If current box is empty, move to previous box
+        if (index > 0 && otpInputs.current[index - 1]) {
+          e.preventDefault();
+          otpInputs.current[index - 1].focus();
+          // Clear the previous box value
+          const newOtp = [...otp];
+          newOtp[index - 1] = "";
+          setOtp(newOtp);
+        }
+      }
+    }
+
+    // Navigate with arrow keys with null checks
+    if (e.key === "ArrowLeft" && index > 0 && otpInputs.current[index - 1]) {
+      e.preventDefault();
+      otpInputs.current[index - 1].focus();
+    }
+    if (e.key === "ArrowRight" && index < 5 && otpInputs.current[index + 1]) {
+      e.preventDefault();
+      otpInputs.current[index + 1].focus();
+    }
+  };
+
   const handleEmailVerification = async (e) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
     try {
-      const response = await fetch("/api/emails/forgot-password/request-password-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+      const response = await fetch(
+        "/api/emails/forgot-password/request-password-email",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        }
+      );
       const result = await response.json();
-      if (!response.ok) throw new Error(result.message || "Email not registered");
+      if (!response.ok)
+        throw new Error(result.message || "Email not registered");
       toast.success("OTP sent to your email address!");
       setCurrentStep(2);
     } catch (err) {
@@ -109,13 +145,17 @@ const PasswordResetPage = () => {
     setError("");
     setIsLoading(true);
     try {
-      const response = await fetch("/api/emails/forgot-password/request-password-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+      const response = await fetch(
+        "/api/emails/forgot-password/request-password-email",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        }
+      );
       const result = await response.json();
-      if (!response.ok) throw new Error(result.message || "Failed to resend OTP");
+      if (!response.ok)
+        throw new Error(result.message || "Failed to resend OTP");
       toast.success("New OTP sent to your email!");
     } catch (err) {
       //toast.error(err.message || "Failed to resend OTP");
@@ -131,7 +171,8 @@ const PasswordResetPage = () => {
     setIsLoading(true);
     try {
       const otpValue = otp.join("");
-      if (otpValue.length !== 6) throw new Error("Please enter a valid 6-digit OTP");
+      if (otpValue.length !== 6)
+        throw new Error("Please enter a valid 6-digit OTP");
       const response = await fetch("/api/emails/forgot-password/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -154,20 +195,23 @@ const PasswordResetPage = () => {
     setError("");
     setIsLoading(true);
     try {
-      if (newPassword !== confirmPassword) throw new Error("Passwords do not match");
-      if (newPassword.length < 8) throw new Error("Password must be at least 8 characters long");
+      if (newPassword !== confirmPassword)
+        throw new Error("Passwords do not match");
+      if (newPassword.length < 8)
+        throw new Error("Password must be at least 8 characters long");
       const response = await fetch("/api/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, newPassword }),
       });
       const result = await response.json();
-      if (!response.ok) throw new Error(result.message || "Password reset failed");
+      if (!response.ok)
+        throw new Error(result.message || "Password reset failed");
       toast.success("Password reset successful!");
       setResetComplete(true);
-    //   setTimeout(() => {
-    //     window.location.href = "/user/signin";
-    //   }, 3000);
+      //   setTimeout(() => {
+      //     window.location.href = "/user/signin";
+      //   }, 3000);
     } catch (err) {
       //toast.error(err.message || "Password reset failed");
       setError(err.message);
@@ -190,9 +234,11 @@ const PasswordResetPage = () => {
           <div className="flex justify-center mb-6">
             <CheckCircle className="h-16 w-16 text-green-400" />
           </div>
-          <h2 className="text-2xl font-bold text-white mb-4">Password Reset Complete</h2>
+          <h2 className="text-2xl font-bold text-white mb-4">
+            Password Reset Complete
+          </h2>
           <p className="text-indigo-200 mb-8">
-            Your password has been successfully reset. You will be redirected to the login page.
+            Your password has been successfully reset.
           </p>
           <Link
             href="/user/signin"
@@ -210,7 +256,10 @@ const PasswordResetPage = () => {
           <form onSubmit={handleEmailVerification}>
             <div className="space-y-6">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-indigo-200 mb-1">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-indigo-200 mb-1"
+                >
                   Email Address
                 </label>
                 <div className="relative">
@@ -265,7 +314,10 @@ const PasswordResetPage = () => {
           <form onSubmit={handleOtpVerification}>
             <div className="space-y-6">
               <div>
-                <label htmlFor="otp" className="block text-sm font-medium text-indigo-200 mb-1">
+                <label
+                  htmlFor="otp"
+                  className="block text-sm font-medium text-indigo-200 mb-1"
+                >
                   Enter Verification Code
                 </label>
                 <p className="text-indigo-300 text-xs sm:text-sm mb-4">
@@ -276,10 +328,12 @@ const PasswordResetPage = () => {
                     <input
                       key={index}
                       id={`otp-${index}`}
+                      ref={(el) => (otpInputs.current[index] = el)}
                       type="text"
                       maxLength="1"
                       value={digit}
                       onChange={(e) => handleOtpChange(index, e.target.value)}
+                      onKeyDown={(e) => handleOtpKeyDown(index, e)}
                       onPaste={index === 0 ? handleOtpPaste : undefined}
                       autoFocus={index === 0}
                       className="w-10 h-10 sm:w-12 sm:h-12 text-center bg-indigo-800/30 border border-indigo-500/50 rounded-lg focus:ring-indigo-400 focus:border-indigo-400 text-white text-lg sm:text-xl font-bold"
@@ -347,7 +401,10 @@ const PasswordResetPage = () => {
           <form onSubmit={handlePasswordReset}>
             <div className="space-y-6">
               <div>
-                <label htmlFor="newPassword" className="block text-sm font-medium text-indigo-200 mb-1">
+                <label
+                  htmlFor="newPassword"
+                  className="block text-sm font-medium text-indigo-200 mb-1"
+                >
                   New Password
                 </label>
                 <div className="relative">
@@ -368,9 +425,15 @@ const PasswordResetPage = () => {
                     type="button"
                     className="absolute inset-y-0 right-0 flex items-center pr-3 text-indigo-300 hover:text-indigo-100 focus:outline-none transition-colors"
                     onClick={() => togglePasswordVisibility("password")}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
                   >
-                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
                   </button>
                 </div>
                 <p className="mt-1 text-xs sm:text-sm text-indigo-300">
@@ -378,7 +441,10 @@ const PasswordResetPage = () => {
                 </p>
               </div>
               <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-indigo-200 mb-1">
+                <label
+                  htmlFor="confirmPassword"
+                  className="block text-sm font-medium text-indigo-200 mb-1"
+                >
                   Confirm Password
                 </label>
                 <div className="relative">
@@ -399,9 +465,15 @@ const PasswordResetPage = () => {
                     type="button"
                     className="absolute inset-y-0 right-0 flex items-center pr-3 text-indigo-300 hover:text-indigo-100 focus:outline-none transition-colors"
                     onClick={() => togglePasswordVisibility("confirm")}
-                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                    aria-label={
+                      showConfirmPassword ? "Hide password" : "Show password"
+                    }
                   >
-                    {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -517,20 +589,24 @@ const PasswordResetPage = () => {
           className="bg-indigo-900 bg-opacity-20 p-6 sm:p-8 md:p-10 rounded-2xl shadow-xl w-full max-w-md backdrop-blur-md border border-indigo-500/30"
         >
           <div className="text-center mb-6 sm:mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold text-white">Reset Password</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">
+              Reset Password
+            </h1>
             <p className="text-indigo-200 mt-2 text-xs sm:text-sm">
               {currentStep === 1
                 ? "Enter your email to receive a verification code"
                 : currentStep === 2
-                ? "Enter the verification code sent to your email"
-                : "Create a new password for your account"}
+                  ? "Enter the verification code sent to your email"
+                  : "Create a new password for your account"}
             </p>
           </div>
 
           {/* Progress Steps */}
           <div className="flex items-center justify-center mb-6 sm:mb-8">
             <div className="flex items-center w-full max-w-xs">
-              <div className={`flex-1 h-1 ${currentStep >= 1 ? "bg-indigo-400" : "bg-indigo-700"}`}></div>
+              <div
+                className={`flex-1 h-1 ${currentStep >= 1 ? "bg-indigo-400" : "bg-indigo-700"}`}
+              ></div>
               <div
                 className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center border-2 ${
                   currentStep >= 1
@@ -540,7 +616,9 @@ const PasswordResetPage = () => {
               >
                 1
               </div>
-              <div className={`flex-1 h-1 ${currentStep >= 2 ? "bg-indigo-400" : "bg-indigo-700"}`}></div>
+              <div
+                className={`flex-1 h-1 ${currentStep >= 2 ? "bg-indigo-400" : "bg-indigo-700"}`}
+              ></div>
               <div
                 className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center border-2 ${
                   currentStep >= 2
@@ -550,7 +628,9 @@ const PasswordResetPage = () => {
               >
                 2
               </div>
-              <div className={`flex-1 h-1 ${currentStep >= 3 ? "bg-indigo-400" : "bg-indigo-700"}`}></div>
+              <div
+                className={`flex-1 h-1 ${currentStep >= 3 ? "bg-indigo-400" : "bg-indigo-700"}`}
+              ></div>
               <div
                 className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center border-2 ${
                   currentStep >= 3
@@ -560,7 +640,9 @@ const PasswordResetPage = () => {
               >
                 3
               </div>
-              <div className={`flex-1 h-1 ${currentStep > 3 ? "bg-indigo-400" : "bg-indigo-700"}`}></div>
+              <div
+                className={`flex-1 h-1 ${currentStep > 3 ? "bg-indigo-400" : "bg-indigo-700"}`}
+              ></div>
             </div>
           </div>
 
