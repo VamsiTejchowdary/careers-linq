@@ -1,8 +1,8 @@
-// app/api/emails/user-sign-up/send-welcome-email/route.js
+
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
-// Professional email template
+
 const createWelcomeEmailTemplate = (firstName, lastName, email) => {
     return `
       <!DOCTYPE html>
@@ -30,11 +30,11 @@ const createWelcomeEmailTemplate = (firstName, lastName, email) => {
               </p>
               <p style="text-align: center; margin: 30px 0;">
                 <a href="https://careerclutch.vercel.app/" style="display: inline-block; padding: 12px 24px; background-color: #4b6cb7; color: #ffffff; text-decoration: none; border-radius: 5px; font-size: 16px; cursor: pointer;">
-                  Go to Your Dashboard
+                  Go to Your Profile
                 </a>
               </p>
               <p style="color: #333333; font-size: 16px; margin: 0 0 15px;">
-                If you have any questions, our support team is here to help at <a href="mailto:support@careerclutch.com" style="color: #4b6cb7; text-decoration: none;">support@careerclutch.com</a>.
+                If you have any questions, our support team is here to help at <a href="mailto:support@careerclutch.com" style="color: #4b6cb7; text-decoration: none;">d.vamsitej333@gmail.com</a>.
               </p>
               <p style="color: #333333; font-size: 16px; margin: 0;">Best regards,<br>The Career Clutch Team</p>
             </td>
@@ -43,11 +43,6 @@ const createWelcomeEmailTemplate = (firstName, lastName, email) => {
             <td style="background-color: #f4f4f4; padding: 20px; text-align: center;">
               <p style="color: #777777; font-size: 12px; margin: 0;">
                 © 2025 Career Clutch. All rights reserved.<br>
-                123 Career Street, Job City, USA
-              </p>
-              <p style="color: #777777; font-size: 12px; margin: 10px 0 0;">
-                <a href="https://careerclutch.vercel.app/privacy" style="color: #777777; text-decoration: none;">Privacy Policy</a> | 
-                <a href="https://careerclutch.vercel.app/terms" style="color: #777777; text-decoration: none;">Terms of Service</a>
               </p>
             </td>
           </tr>

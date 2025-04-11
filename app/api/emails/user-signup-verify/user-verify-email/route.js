@@ -1,8 +1,8 @@
-// app/api/emails/user-signup-verify/user-verify-email/route.js
 import { connectMongoDB } from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import Otp from "@/models/Otp";
+import User from "@/models/Users";
 
 export async function POST(req) {
   try {
@@ -13,6 +13,13 @@ export async function POST(req) {
     if (!email) {
       return NextResponse.json({ message: "Email is required." }, { status: 400 });
     }
+
+    const user = await User.findOne({ email });
+
+        if (user) {
+            console.log("Email already registered.");
+          return NextResponse.json({ message: "Email already registered." }, { status: 400 });
+        }
 
     // Delete any existing OTPs for this email
     await Otp.deleteMany({ email });

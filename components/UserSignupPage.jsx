@@ -21,6 +21,7 @@ import {
   Eye,
   EyeOff,
   AlertTriangle,
+  X,
 } from "lucide-react";
 
 const UserSignupPage = () => {
@@ -228,6 +229,10 @@ const UserSignupPage = () => {
     }
   };
 
+  const handleClose = () => {
+    setShowOtpModal(false);
+  };
+
   const handleOtpSubmit = async (e) => {
     e.preventDefault();
     setOtpError("");
@@ -301,13 +306,18 @@ const UserSignupPage = () => {
     if (e.key === "Backspace" && otp[index] === "" && index > 0) {
       otpInputs.current[index - 1].focus();
     }
-
     // Navigate with arrow keys
     if (e.key === "ArrowLeft" && index > 0) {
       otpInputs.current[index - 1].focus();
     }
     if (e.key === "ArrowRight" && index < 3) {
       otpInputs.current[index + 1].focus();
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Escape") {
+      handleClose();
     }
   };
 
@@ -409,11 +419,7 @@ const UserSignupPage = () => {
               </p>
             </div>
 
-            {error && (
-              <div className="mb-6 p-4 bg-red-900/30 border-l-4 border-red-500 text-red-100 backdrop-blur-sm rounded-r">
-                <p>{error}</p>
-              </div>
-            )}
+            
 
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Form Fields (Unchanged) */}
@@ -786,6 +792,11 @@ const UserSignupPage = () => {
                   </label>
                 </div>
               </div>
+              {error && (
+              <div className="mb-6 p-4 bg-red-900/30 border-l-4 border-red-500 text-red-100 backdrop-blur-sm rounded-r">
+                <p>{error}</p>
+              </div>
+            )}
               <button
                 type="submit"
                 disabled={
@@ -842,65 +853,78 @@ const UserSignupPage = () => {
 
       {/* OTP Modal */}
       {showOtpModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.3 }}
-            className="bg-gradient-to-br from-indigo-950 to-purple-900 p-4 sm:p-6 rounded-xl shadow-xl backdrop-blur-xl border border-indigo-500/40 w-full max-w-xs sm:max-w-sm"
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3"
+        onKeyDown={handleKeyDown}
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 0.3 }}
+          className="bg-gradient-to-br from-indigo-950 to-purple-900 p-4 sm:p-6 rounded-xl shadow-xl backdrop-blur-xl border border-indigo-500/40 w-full max-w-xs sm:max-w-sm relative"
+        >
+          {/* Close Button */}
+          <button
+            onClick={handleClose}
+            className="absolute top-3 right-3 p-1 text-indigo-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-400 rounded-full transition-colors"
+            aria-label="Close modal"
           >
-            <div className="flex flex-col items-center mb-4 sm:mb-6">
-              <div className="bg-indigo-600/30 p-2 rounded-full mb-3">
-                <Mail className="h-6 w-6 text-indigo-200" />
-              </div>
-              <h2 className="text-xl sm:text-2xl font-bold text-white text-center">
-                Verify Your Email
-              </h2>
-              <p className="text-indigo-200 text-center mt-1 text-sm sm:text-base">
-                We sent a code to {emailObfuscated}
+            <X className="h-5 w-5 sm:h-6 sm:w-6" />
+          </button>
+
+          <div className="flex flex-col items-center mb-4 sm:mb-6">
+            <div className="bg-indigo-600/30 p-2 rounded-full mb-3">
+              <Mail className="h-6 w-6 text-indigo-200" />
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-white text-center">
+              Verify Your Email
+            </h2>
+            <p className="text-indigo-200 text-center mt-1 text-sm sm:text-base">
+              We sent a code to {emailObfuscated}
+            </p>
+          </div>
+
+          {otpError && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-4 p-2 bg-red-900/40 border-l-4 border-red-500 text-red-100 rounded-r flex items-start gap-2"
+            >
+              <AlertTriangle className="h-4 w-4 text-red-300 shrink-0 mt-0.5" />
+              <p className="text-xs sm:text-sm">{otpError}</p>
+            </motion.div>
+          )}
+
+          <form onSubmit={handleOtpSubmit} className="space-y-4 sm:space-y-5">
+            <div
+              className="flex justify-center space-x-2 sm:space-x-3"
+              onPaste={handlePaste}
+            >
+              {otp.map((digit, index) => (
+                <input
+                  key={index}
+                  type="text"
+                  maxLength="1"
+                  value={digit}
+                  onChange={(e) => handleOtpChange(index, e.target.value)}
+                  onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                  ref={(el) => (otpInputs.current[index] = el)}
+                  className="w-12 sm:w-14 h-12 sm:h-14 text-center text-lg sm:text-xl font-bold text-white bg-indigo-800/30 border-2 border-indigo-500/50 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 placeholder-indigo-400/50 transition-all"
+                  placeholder="•"
+                  aria-label={`Character ${index + 1} of verification code`}
+                />
+              ))}
+            </div>
+
+            <div className="bg-indigo-900/40 rounded-lg p-2 sm:p-3 border border-indigo-600/30">
+              <p className="text-indigo-200 text-xs sm:text-sm flex items-start gap-2">
+                <AlertTriangle className="h-4 w-4 text-indigo-300 shrink-0 mt-0.5" />
+                <span>Can't find the email? Check your spam folder.</span>
               </p>
             </div>
 
-            {otpError && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mb-4 p-2 bg-red-900/40 border-l-4 border-red-500 text-red-100 rounded-r flex items-start gap-2"
-              >
-                <AlertTriangle className="h-4 w-4 text-red-300 shrink-0 mt-0.5" />
-                <p className="text-xs sm:text-sm">{otpError}</p>
-              </motion.div>
-            )}
-
-            <form onSubmit={handleOtpSubmit} className="space-y-4 sm:space-y-5">
-              <div
-                className="flex justify-center space-x-2 sm:space-x-3"
-                onPaste={handlePaste}
-              >
-                {otp.map((digit, index) => (
-                  <input
-                    key={index}
-                    type="text"
-                    maxLength="1"
-                    value={digit}
-                    onChange={(e) => handleOtpChange(index, e.target.value)}
-                    onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                    ref={(el) => (otpInputs.current[index] = el)}
-                    className="w-12 sm:w-14 h-12 sm:h-14 text-center text-lg sm:text-xl font-bold text-white bg-indigo-800/30 border-2 border-indigo-500/50 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 placeholder-indigo-400/50 transition-all"
-                    placeholder="•"
-                    aria-label={`Character ${index + 1} of verification code`}
-                  />
-                ))}
-              </div>
-
-              <div className="bg-indigo-900/40 rounded-lg p-2 sm:p-3 border border-indigo-600/30">
-                <p className="text-indigo-200 text-xs sm:text-sm flex items-start gap-2">
-                  <AlertTriangle className="h-4 w-4 text-indigo-300 shrink-0 mt-0.5" />
-                  <span>Can't find the email? Check your spam folder.</span>
-                </p>
-              </div>
-
+            <div className="flex flex-col sm:flex-row gap-3">
               <button
                 type="submit"
                 disabled={isLoading || otp.some((char) => char === "")}
@@ -915,24 +939,32 @@ const UserSignupPage = () => {
                   <>Verify Code</>
                 )}
               </button>
+              <button
+                type="button"
+                onClick={handleClose}
+                className="w-full flex justify-center items-center py-2.5 sm:py-3 px-4 bg-indigo-800/50 hover:bg-indigo-800/70 focus:ring-4 focus:ring-indigo-400/50 text-indigo-100 font-medium rounded-lg text-sm sm:text-base transition-all shadow-lg shadow-indigo-900/30"
+              >
+                Cancel
+              </button>
+            </div>
 
-              <div className="text-center">
-                <p className="text-indigo-200 text-xs sm:text-sm">
-                  Didn't receive the code?{" "}
-                  <button
-                    type="button"
-                    onClick={handleSubmit}
-                    className="text-indigo-300 hover:text-white font-medium transition-colors focus:outline-none focus:underline"
-                    disabled={isLoading}
-                  >
-                    Resend
-                  </button>
-                </p>
-              </div>
-            </form>
-          </motion.div>
-        </div>
-      )}
+            <div className="text-center">
+              <p className="text-indigo-200 text-xs sm:text-sm">
+                Didn't receive the code?{" "}
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  className="text-indigo-300 hover:text-white font-medium transition-colors focus:outline-none focus:underline"
+                  disabled={isLoading}
+                >
+                  Resend
+                </button>
+              </p>
+            </div>
+          </form>
+        </motion.div>
+      </div>
+    )}
 
       {/* Footer */}
       <footer className="relative z-10 bg-indigo-900 bg-opacity-40 backdrop-blur-sm py-6 border-t border-indigo-500/30 mt-12">

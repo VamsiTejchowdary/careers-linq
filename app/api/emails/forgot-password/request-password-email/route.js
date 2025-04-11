@@ -1,4 +1,3 @@
-// app/api/request-password-reset/route.js
 import { connectMongoDB } from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
@@ -15,30 +14,30 @@ export async function POST(req) {
       return NextResponse.json({ message: "Email is required." }, { status: 400 });
     }
 
-    // Check if user exists
+
     const user = await User.findOne({ email });
     if (!user) {
       return NextResponse.json({ message: "Email not registered." }, { status: 404 });
     }
 
-    // Delete any existing OTPs for this email
+
     await Otp.deleteMany({ email });
 
-    // Generate 6-digit numeric OTP
+
     const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 100000-999999
 
-    // Store OTP in MongoDB
+
     await Otp.create({
       email,
       otp,
-      expiresAt: new Date(Date.now() + 5 * 60 * 1000), // 5 minutes
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000), 
       createdAt: new Date(),
     });
 
-    // Send OTP email via Resend
+
     const resend = new Resend(process.env.RESEND_API_KEY);
     await resend.emails.send({
-      from: "Career Clutch <no-reply@vamsitejchowdary.com>", // Replace with your verified domain
+      from: "Career Clutch <no-reply@vamsitejchowdary.com>", 
       to: email,
       subject: "Reset Your Career Clutch Password",
       html: `
