@@ -241,7 +241,7 @@ const SignInPage = () => {
                   </label>
                 </div>
                 <a
-                  href="#"
+                  href="/forgotpassword"
                   className="text-sm font-medium text-indigo-300 hover:text-white transition-colors"
                 >
                   Forgot password?
