@@ -34,7 +34,7 @@ const createWelcomeEmailTemplate = (firstName, lastName, email) => {
                 </a>
               </p>
               <p style="color: #333333; font-size: 16px; margin: 0 0 15px;">
-                If you have any questions, our support team is here to help at <a href="mailto:support@careerclutch.com" style="color: #4b6cb7; text-decoration: none;">d.vamsitej333@gmail.com</a>.
+                If you have any questions, our support team is here to help at <a href="mailto:support@careerclutch.com" style="color: #4b6cb7; text-decoration: none;">d.vamsitej333@gmail.com</a>
               </p>
               <p style="color: #333333; font-size: 16px; margin: 0;">Best regards,<br>The Career Clutch Team</p>
             </td>
