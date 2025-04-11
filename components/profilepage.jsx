@@ -94,7 +94,8 @@ export default function ProfilePage() {
 
     const data = new FormData();
     for (const key in formData) {
-      if (key !== "resume") { // Exclude resume field since it's handled separately
+      if (key !== "resume") {
+        // Exclude resume field since it's handled separately
         data.append(key, formData[key]);
       }
     }
@@ -176,7 +177,15 @@ export default function ProfilePage() {
 
   // Calculate profile completion percentage
   const calculateCompletion = () => {
-    const fields = ["firstName", "lastName", "email", "phone", "linkedin", "portfolio", "resume"];
+    const fields = [
+      "firstName",
+      "lastName",
+      "email",
+      "phone",
+      "linkedin",
+      "portfolio",
+      "resume",
+    ];
     const filledFields = fields.filter((field) => user[field]).length;
     return Math.round((filledFields / fields.length) * 100);
   };
@@ -191,18 +200,18 @@ export default function ProfilePage() {
 
       {/* Animated background bubbles */}
       <div className="absolute inset-0 w-full h-full">
-      <ToastContainer 
-              position="top-center" 
-              autoClose={4000}
-              hideProgressBar={false}
-              newestOnTop
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="light"
-            />
+        <ToastContainer
+          position="top-center"
+          autoClose={4000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
         {bubbles.map((bubble) => (
           <motion.div
             key={bubble.id}
@@ -224,7 +233,6 @@ export default function ProfilePage() {
               delay: bubble.delay,
             }}
           />
-          
         ))}
       </div>
 
@@ -239,13 +247,21 @@ export default function ProfilePage() {
                   @
                 </div>
               </div>
-              <span className="ml-3 text-xl font-bold text-white">Career Clutch</span>
+              <span className="ml-3 text-xl font-bold text-white">
+                Career Clutch
+              </span>
             </Link>
             <nav className="flex space-x-6">
-              <Link href="/appliedjobs" className="text-indigo-200 hover:text-white transition-colors">
+              <Link
+                href="/appliedjobs"
+                className="text-indigo-200 hover:text-white transition-colors"
+              >
                 Applied Jobs
               </Link>
-              <Link href="/careers" className="text-indigo-200 hover:text-white transition-colors">
+              <Link
+                href="/careers"
+                className="text-indigo-200 hover:text-white transition-colors"
+              >
                 Careers
               </Link>
               <Link href="/profile" className="text-white font-medium">
@@ -258,7 +274,11 @@ export default function ProfilePage() {
 
       {/* Main content */}
       <main className="relative z-10 max-w-5xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           {/* Page header with back button */}
           <div className="mb-8 flex items-center">
             <button
@@ -300,19 +320,27 @@ export default function ProfilePage() {
                     </h2>
                     <p className="text-indigo-200 flex items-center">
                       <Award className="h-4 w-4 mr-1" />
-                      Member since {new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+                      Member since{" "}
+                      {new Date().toLocaleDateString("en-US", {
+                        month: "long",
+                        year: "numeric",
+                      })}
                     </p>
                   </div>
                 </div>
                 <div className="bg-indigo-900/30 rounded-lg p-3 border border-indigo-500/30 w-full md:w-auto">
-                  <p className="text-sm text-indigo-200 mb-1">Profile Completion</p>
+                  <p className="text-sm text-indigo-200 mb-1">
+                    Profile Completion
+                  </p>
                   <div className="h-2 w-full bg-indigo-800/50 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-indigo-400 to-purple-400"
                       style={{ width: `${completionPercentage}%` }}
                     ></div>
                   </div>
-                  <p className="text-right text-sm text-indigo-200 mt-1">{completionPercentage}%</p>
+                  <p className="text-right text-sm text-indigo-200 mt-1">
+                    {completionPercentage}%
+                  </p>
                 </div>
               </div>
             </div>
@@ -323,7 +351,9 @@ export default function ProfilePage() {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-indigo-200 mb-1">First Name</label>
+                      <label className="block text-sm font-medium text-indigo-200 mb-1">
+                        First Name
+                      </label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                           <User className="h-5 w-5 text-indigo-300" />
@@ -339,7 +369,9 @@ export default function ProfilePage() {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-indigo-200 mb-1">Last Name</label>
+                      <label className="block text-sm font-medium text-indigo-200 mb-1">
+                        Last Name
+                      </label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                           <User className="h-5 w-5 text-indigo-300" />
@@ -355,7 +387,9 @@ export default function ProfilePage() {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-indigo-200 mb-1">Email</label>
+                      <label className="block text-sm font-medium text-indigo-200 mb-1">
+                        Email
+                      </label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                           <Mail className="h-5 w-5 text-indigo-300" />
@@ -371,7 +405,9 @@ export default function ProfilePage() {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-indigo-200 mb-1">Phone</label>
+                      <label className="block text-sm font-medium text-indigo-200 mb-1">
+                        Phone
+                      </label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                           <Phone className="h-5 w-5 text-indigo-300" />
@@ -387,7 +423,9 @@ export default function ProfilePage() {
                       </div>
                     </div>
                     <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-indigo-200 mb-1">LinkedIn Profile</label>
+                      <label className="block text-sm font-medium text-indigo-200 mb-1">
+                        LinkedIn Profile
+                      </label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                           <Briefcase className="h-5 w-5 text-indigo-300" />
@@ -403,7 +441,9 @@ export default function ProfilePage() {
                       </div>
                     </div>
                     <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-indigo-200 mb-1">Portfolio Website</label>
+                      <label className="block text-sm font-medium text-indigo-200 mb-1">
+                        Portfolio Website
+                      </label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                           <Globe className="h-5 w-5 text-indigo-300" />
@@ -464,12 +504,20 @@ export default function ProfilePage() {
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm text-indigo-300">Email Address</p>
-                          <p className="text-white overflow-hidden text-ellipsis">{user?.email}</p>
+                          <p className="text-sm text-indigo-300">
+                            Email Address
+                          </p>
+                          <p className="text-white overflow-hidden text-ellipsis">
+                            {user?.email}
+                          </p>
                         </div>
                         <div>
-                          <p className="text-sm text-indigo-300">Phone Number</p>
-                          <p className="text-white">{user?.phone || "Not provided"}</p>
+                          <p className="text-sm text-indigo-300">
+                            Phone Number
+                          </p>
+                          <p className="text-white">
+                            {user?.phone || "Not provided"}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -481,7 +529,9 @@ export default function ProfilePage() {
                       </h3>
                       <div className="space-y-4">
                         <div>
-                          <p className="text-sm text-indigo-300">LinkedIn Profile</p>
+                          <p className="text-sm text-indigo-300">
+                            LinkedIn Profile
+                          </p>
                           {user?.linkedin ? (
                             <a
                               href={user.linkedin}
@@ -492,11 +542,15 @@ export default function ProfilePage() {
                               {user.linkedin}
                             </a>
                           ) : (
-                            <p className="text-indigo-400 italic">Not provided</p>
+                            <p className="text-indigo-400 italic">
+                              Not provided
+                            </p>
                           )}
                         </div>
                         <div>
-                          <p className="text-sm text-indigo-300">Portfolio Website</p>
+                          <p className="text-sm text-indigo-300">
+                            Portfolio Website
+                          </p>
                           {user?.portfolio ? (
                             <a
                               href={user.portfolio}
@@ -507,7 +561,9 @@ export default function ProfilePage() {
                               {user.portfolio}
                             </a>
                           ) : (
-                            <p className="text-indigo-400 italic">Not provided</p>
+                            <p className="text-indigo-400 italic">
+                              Not provided
+                            </p>
                           )}
                         </div>
                       </div>
@@ -524,22 +580,43 @@ export default function ProfilePage() {
 
                       {user?.resume ? (
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                          <div className="mb-4 md:mb-0">
-                            <p className="text-sm text-indigo-300 mb-1">Current Resume</p>
-                            <p className="text-white">
-                              {user.resume.split("/").pop().split("-").slice(-1)[0]}
+                          <div className="mb-4 md:mb-0 max-w-full overflow-hidden">
+                            <p className="text-sm text-indigo-300 mb-1">
+                              Current Resume
+                            </p>
+                            <p className="text-white text-ellipsis overflow-hidden whitespace-nowrap">
+                              {(() => {
+                                // Extract the original filename
+                                const originalFilename = user.resume
+                                  .split("/")
+                                  .pop();
+
+                                // Format as FirstName_LastName.pdf
+                                const userName =
+                                  user.firstName && user.lastName
+                                    ? `${user.firstName}_${user.lastName}.pdf`
+                                    : originalFilename.length > 20
+                                      ? originalFilename.substring(0, 15) +
+                                        "..." +
+                                        originalFilename.substring(
+                                          originalFilename.lastIndexOf(".")
+                                        )
+                                      : originalFilename;
+
+                                return userName;
+                              })()}
                             </p>
                             <p className="text-xs text-indigo-300 mt-1">
                               Last updated: {new Date().toLocaleDateString()}
                             </p>
                           </div>
-                          <div className="flex flex-col sm:flex-row gap-3">
+                          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                             <button
                               onClick={() => setResumePreviewOpen(true)}
                               className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors flex items-center justify-center"
                             >
                               <FileText className="h-4 w-4 mr-2" />
-                              View Resume
+                              <span className="whitespace-nowrap">View</span>
                             </button>
                             <a
                               href={user.resume}
@@ -547,21 +624,25 @@ export default function ProfilePage() {
                               className="px-4 py-2 bg-indigo-700/50 hover:bg-indigo-700/70 border border-indigo-500/50 text-white rounded-lg transition-colors flex items-center justify-center"
                             >
                               <Download className="h-4 w-4 mr-2" />
-                              Download
+                              <span className="whitespace-nowrap">
+                                Download
+                              </span>
                             </a>
                             <button
                               onClick={triggerFileInput}
                               className="px-4 py-2 bg-indigo-800/50 hover:bg-indigo-700/70 border border-indigo-500/50 text-white rounded-lg transition-colors flex items-center justify-center"
                             >
                               <Upload className="h-4 w-4 mr-2" />
-                              Update
+                              <span className="whitespace-nowrap">Update</span>
                             </button>
                           </div>
                         </div>
                       ) : (
                         <div className="flex flex-col items-center justify-center py-6 bg-indigo-900/20 rounded-lg border border-dashed border-indigo-500/50">
                           <FileText className="h-12 w-12 text-indigo-400 mb-3" />
-                          <p className="text-indigo-300 mb-3">No resume uploaded yet</p>
+                          <p className="text-indigo-300 mb-3">
+                            No resume uploaded yet
+                          </p>
                           <button
                             onClick={triggerFileInput}
                             className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors flex items-center"
@@ -623,7 +704,8 @@ export default function ProfilePage() {
                       Upload your resume
                     </h4>
                     <p className="text-indigo-300 text-sm">
-                      A well-crafted resume increases your chances of getting noticed by recruiters.
+                      A well-crafted resume increases your chances of getting
+                      noticed by recruiters.
                     </p>
                   </div>
                 )}
@@ -634,7 +716,8 @@ export default function ProfilePage() {
                       Add your LinkedIn
                     </h4>
                     <p className="text-indigo-300 text-sm">
-                      Connect with recruiters and employers by linking your professional profile.
+                      Connect with recruiters and employers by linking your
+                      professional profile.
                     </p>
                   </div>
                 )}
@@ -645,7 +728,8 @@ export default function ProfilePage() {
                       Showcase your work
                     </h4>
                     <p className="text-indigo-300 text-sm">
-                      Add your portfolio to highlight your projects and achievements.
+                      Add your portfolio to highlight your projects and
+                      achievements.
                     </p>
                   </div>
                 )}
@@ -655,7 +739,8 @@ export default function ProfilePage() {
                     Complete your profile
                   </h4>
                   <p className="text-indigo-300 text-sm">
-                    Profiles with complete information are 40% more likely to be viewed by recruiters.
+                    Profiles with complete information are 40% more likely to be
+                    viewed by recruiters.
                   </p>
                 </div>
               </div>
